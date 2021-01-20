@@ -63,6 +63,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\AlignedGames\Polygonal Foliage Asset Package\Scripts\Utility\FlyCameraBehaviour.cs" />
     <Compile Include="Assets\EnemyAI.cs" />
     <Compile Include="Assets\RootVegetables\Scripts\Rotate.cs" />
     <Compile Include="Assets\camera.cs" />
@@ -71,8 +72,14 @@
     <Compile Include="Assets\flyInCircle.cs" />
     <Compile Include="Assets\foodScript.cs" />
     <Compile Include="Assets\item_Inside.cs" />
+    <Compile Include="Assets\lightVisibility.cs" />
+    <Compile Include="Assets\player_Script.cs" />
+    <Compile Include="Assets\reposition_collider.cs" />
+    <Compile Include="Assets\rotateOpen.cs" />
     <Compile Include="Assets\spawning_script.cs" />
     <Compile Include="Assets\thirdPersonController.cs" />
+    <None Include="Assets\AlignedGames\Polygonal Foliage Asset Package\Shaders\Cloud.shader" />
+    <None Include="Assets\AlignedGames\Polygonal Foliage Asset Package\Shaders\Diffuse.shader" />
     <None Include="Assets\FelineGargoyle\readme_first.txt" />
     <Reference Include="UnityEngine">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.4.0f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>

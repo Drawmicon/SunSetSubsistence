@@ -17,6 +17,8 @@ public class foodScript : MonoBehaviour
     public float moveCloserToGround;
     Vector3 vv, aa;
 
+    public float respawnTimer;
+
     //public float delay;
     public float baseHealth;
 
@@ -67,14 +69,16 @@ public class foodScript : MonoBehaviour
         {
             this.transform.localScale -= (scaleShrinkRate * (transform.localScale.magnitude / scaleMax))*Vector3.one;
         }              
-        Destroy(this);      
+        Destroy(this);
     }
 
     void OnTriggerEnter(Collider player)
     {
         if (player.tag == "Player")
         {
-            Debug.Log(player.tag + " Detected!");
+            Debug.Log(player.name+" ("+player.tag + ") Detected!");
+
+
             /*
             if (Input.getKey(“Obtain”))
             {*/
@@ -92,7 +96,7 @@ public class foodScript : MonoBehaviour
       {
                   //rejectEating.play();
               }*/
-            Destroy(this);
+            Destroy(this.gameObject);
             }
     }
 
@@ -115,7 +119,9 @@ public class foodScript : MonoBehaviour
                 int xx = (int)char.GetNumericValue(x);
                 //Debug.Log("Spawn source name" + subName + " at index " + xx + ", "+x);
 
-                ss.timers[xx] = ss.delayTimer;
+                //ss.timers[xx] = ss.delayTimer;
+                ss.timers[xx] = respawnTimer;
+                
             }
         }
     }

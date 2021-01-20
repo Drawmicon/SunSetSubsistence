@@ -114,4 +114,5 @@ MonoBehaviour:
   scaleMin: 5
   offGroundHeight: 2
   moveCloserToGround: 2
+  respawnTimer: 4
   baseHealth: 20

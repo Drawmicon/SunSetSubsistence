@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Gargoyles1.unity
+- path: Assets/Gargoyles3_Spawn_LampPost_DayCycle.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

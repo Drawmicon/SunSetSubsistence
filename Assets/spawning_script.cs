@@ -27,6 +27,9 @@ public class spawning_script : MonoBehaviour
 	public bool autoSelection;
 
 	public float[] timers;
+	public float positionRadius;
+
+	public bool randomPositions;
 
 	// Start is called before the first frame update
 	void Start()
@@ -44,6 +47,7 @@ public class spawning_script : MonoBehaviour
 		currentSpawn = 0;
 		farm = new GameObject();
 		farm.name = this.name + ": Farm";
+
 		int counter = 0;
 		Vector3 temp = Vector3.zero;
 		for(int i = 0; i < itemColumnSize; i++)
@@ -85,8 +89,36 @@ public class spawning_script : MonoBehaviour
 		}
 	}
 
-void Update()
+	//randomly spawn in radius, doesnt spawn if object exist in position
+	void cirleSpawnPositions()
 	{
+		//add ground.y + 1 to position, so terrain doesnt prevent object from being instantiated, only other objects would
+
+		GameObject ground = GameObject.FindGameObjectWithTag("Ground");
+		for (int i = 0; i < maxSpawn; i++)
+		{
+			Vector3 temp = new Vector3((Random.insideUnitCircle * spawnRadius).x, ground.transform.position.y+1, (Random.insideUnitCircle * spawnRadius).y);
+			//temp += this.transform.localPosition;
+			if (Physics.CheckSphere(positions[i], objectSpacing))
+			{
+				positions[i] = temp;
+			}
+			else
+            {
+				i--;
+            }
+		}
+	}
+
+
+	void Update()
+	{
+
+		if(randomPositions)
+        {
+			cirleSpawnPositions();
+        }
+
 		if(farm.transform.childCount < maxSpawn)
 		{
 			for (int i = 0; i < positions.Length; i++)
@@ -96,9 +128,19 @@ void Update()
 				{
 					if (timers[i] <= 0)
 					{
+						//if nothing exist at position
+						//if (Physics.CheckSphere(positions[i], positionRadius))
+						//{
 						//Debug.Log("Child DNE: " + this.name + ": " + prefab[0].name + i);
 						//create game objects at identity grid position
 						//Debug.Log("Instantiate (" + i + ") : " + positions[i] + "\n");
+
+						if (randomPositions)
+						{
+							cirleSpawnPositions();
+							prefabSelection = Random.Range(0, prefab.Length - 1);
+						}
+
 						GameObject temp = Instantiate(prefab[prefabSelection], positions[i], Quaternion.identity);
 						temp.name = this.name + ": " + prefab[prefabSelection].name + i;
 						temp.tag = "Item";
@@ -108,6 +150,9 @@ void Update()
 						//set positions as global position of temp object, based on local position
 						//aka get local position of temp and translate to global position. then set that vector to positions array
 						positions[i] = transform.TransformPoint(temp.transform.localPosition);
+						
+
+						//}
 					}
 					else
                     {
