@@ -79,11 +79,11 @@ public class dayNightCycle_Script : MonoBehaviour
 
         if (sunAngle > nightStart && sunAngle < nightEnd)
         {
-            dayTime = false;
+            dayTime = true;
         }
         else
         {
-            dayTime = true;
+            dayTime = false;
         }
 
         transform.localRotation = Quaternion.Euler(sunAngle, 0, 0);
