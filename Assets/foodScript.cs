@@ -5,6 +5,8 @@ using UnityEngine.AI;
 
 public class foodScript : MonoBehaviour
 {
+    public GameObject player;
+    public player_Script ps;
 
     public float healthScore;
     private float healthMultiplier;
@@ -29,6 +31,12 @@ public class foodScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if(player = null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player");            
+        }
+        //ps = player.GetComponent<player_Script>();
+
         this.transform.localScale = Random.Range(scaleMin,scaleMax) * Vector3.one;
         healthScore = transform.localScale.magnitude * healthMultiplier+baseHealth;
         speed += (Random.Range(0, 15))*.1f*speed;
@@ -90,26 +98,31 @@ public class foodScript : MonoBehaviour
     {
         if (player.gameObject.tag == "Player")
         {
+
             Debug.Log(player.name+" ("+player.tag + ") Detected!");
-            //Debug.Log(player.name+" ("+player.tag + "): Health("+player.GetComponent<player_Script>().healthScore+") + "+healthScore);
-            /*
-            if (Input.getKey(“Obtain”))
-            {*/
-            //if(player.getComponent<healthScore>() <= player.getComponent<maxHealthScore>())
 
-            //  {
-            /*//Add to health score
-            healthScore += player.getComponent<foodScore>();
-
-            Set healthScore = 0f;
-            Eat.Play();*/
-            //shrink();
-            /*  }
-              else
+            if (player.GetComponent<player_Script>().healthScore < player.GetComponent<player_Script>().MaxHealthScore)
             {
-                  //rejectEating.play();
-            }*/
+                if (player.GetComponent<player_Script>().healthScore + healthScore >= player.GetComponent<player_Script>().MaxHealthScore)
+                {
+                    player.GetComponent<player_Script>().healthScore = player.GetComponent<player_Script>().MaxHealthScore;
+                }
+                else
+                {
+                    player.GetComponent<player_Script>().healthScore += healthScore;
+                }
+                //Debug.Log(player.name+" ("+player.tag + "): Health("+player.GetComponent<player_Script>().healthScore+") + "+healthScore);
+                /*
+                Set healthScore = 0f;
+                Eat.Play();*/
+                //shrink();
+                /*  }
+                  else
+                {
+                      //rejectEating.play();
+                }*/
                 Destroy(this.gameObject);
+            }
             }
     }
 

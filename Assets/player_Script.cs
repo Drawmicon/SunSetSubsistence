@@ -108,8 +108,10 @@ public class player_Script : MonoBehaviour
             }
             else
             { 
-                if (dnc.dayTime && Time.timeScale == 1)
+                if (dnc.dayTime && Time.timeScale == 1)//if player's health is active and is greater than 0, and its daytime, and time scale is normal
                 {
+                    dnc.normalSpeed = false;
+
                     if (healthScore < MaxHealthScore)
                     {
                         healthScore += solarRegenRate * Time.deltaTime;
@@ -121,6 +123,7 @@ public class player_Script : MonoBehaviour
                 {
                     if (Time.timeScale == 1)
                     {
+                        dnc.normalSpeed = true;
                         healthScore -= lunarDegenRate * Time.deltaTime;
                     
                     ccc.switchCamMode = true;

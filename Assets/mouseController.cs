@@ -26,7 +26,8 @@ public class mouseController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!dnc.dayTime) {
+        if (!dnc.dayTime) 
+        {
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
             playerBody.transform.Rotate(Vector3.up * mouseX);

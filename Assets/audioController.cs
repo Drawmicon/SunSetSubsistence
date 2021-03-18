@@ -5,10 +5,16 @@ using UnityEngine.Audio;
 public class audioController : MonoBehaviour
 {
     public AudioSource musicSource;
+    public AudioClip titleSong, instrumental;
+    /*public Start_Menu_Script sms;*/
     // Start is called before the first frame update
     void Start()
     {
-        
+        /*if(sms == null)
+        {
+            Debug.LogError("audioController Script is missing reference to Start_Menu_Script script!");
+        }
+        */
     }
 
     private void Awake()
@@ -40,6 +46,6 @@ public class audioController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+       
     }
 }

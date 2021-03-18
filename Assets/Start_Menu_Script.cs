@@ -16,7 +16,7 @@ public class Start_Menu_Script : MonoBehaviour
     public GameObject HUD;
     public GameObject gameOver;
 
-    public int menu; //0:no menu, 1:title menu, 2: options menu, 3:exit game, 4:pause
+    public int menu; //0:no menu, 1:title menu, 2: options menu, 3:exit game, 4:pause, 5:gameover
     public Text subtitle;
     private string[] subOptions;
 
@@ -27,6 +27,11 @@ public class Start_Menu_Script : MonoBehaviour
     public Camera main, cinema;
     public cinemaCameraController ccc;
     public cinemaCameraExtra cce;
+
+    public Image healthIcon;
+    public Sprite[] healthIconImages; //health Icon images == 0:safe, 1:detected, 2:lit up, 3: low health
+
+    public player_Script ps;
     // Start is called before the first frame update
     void Start()
     {
@@ -39,15 +44,18 @@ public class Start_Menu_Script : MonoBehaviour
         exitMenu.SetActive (false);
         pauseMenu.SetActive (false);
         HUD.SetActive(false);
+        gameOver.SetActive(false);
         playerGhostMode = false;
         devOp = false;
-        menu = 1;
-
-        //
+        menu = 1;     
         
        // main.enabled = false;
         //cinema.enabled = true;
-
+        if(ps == null)
+        {
+            ps = GameObject.FindGameObjectWithTag("Player").GetComponent<player_Script>();
+        }
+        ps.healthModeActive = false;
     }
     
     public void swapCams()
@@ -84,8 +92,10 @@ public class Start_Menu_Script : MonoBehaviour
         exitMenu.SetActive(false);
         pauseMenu.SetActive(false);
         HUD.SetActive(false);
+        gameOver.SetActive(false);
         resumeGameWorld();
         swapCams();
+        ps.healthModeActive = true;
     }
 
     public void disableUINotHUD()
@@ -98,8 +108,10 @@ public class Start_Menu_Script : MonoBehaviour
         exitMenu.SetActive(false);
         pauseMenu.SetActive(false);
         HUD.SetActive(true);
+        gameOver.SetActive(false);
         resumeGameWorld();
         swapCams();
+        ps.healthModeActive = true;
     }
 
     public void forceEndGame()
@@ -115,7 +127,6 @@ public class Start_Menu_Script : MonoBehaviour
 
     public void startButton()//exit UI and starts game world time
     {
-        
         menu = 0;
         disableUINotHUD();//removes ui and starts game world time
     }
@@ -136,6 +147,7 @@ public class Start_Menu_Script : MonoBehaviour
         pauseMenu.SetActive(false);
         optionsMenu.SetActive(true);
         HUD.SetActive(false);
+        gameOver.SetActive(false);
     }
 
     public void exitButton()
@@ -147,6 +159,7 @@ public class Start_Menu_Script : MonoBehaviour
         optionsMenu.SetActive(false);
         pauseMenu.SetActive(false);
         exitMenu.SetActive(true);
+        gameOver.SetActive(false);
     }
 
     public void resumeButton()//resume game, exit ui
@@ -159,6 +172,7 @@ public class Start_Menu_Script : MonoBehaviour
         exitMenu.SetActive(false);
         pauseMenu.SetActive(false);
         HUD.SetActive(true);
+        gameObject.SetActive(false);
     }
 
     public void stopGameWorld()
@@ -215,7 +229,7 @@ public class Start_Menu_Script : MonoBehaviour
 
     public void goBackMenu()
     {
-        //0:no menu, 1:title menu, 2: options menu, 3:exit game, 4:pause
+        //0:no menu, 1:title menu, 2: options menu, 3:exit game, 4:pause, 5:gameover
         menu = previousMode;
         switch (previousMode)
         {
@@ -261,6 +275,19 @@ public class Start_Menu_Script : MonoBehaviour
         }
     }
 
+    public void gameOverMenu()//enable gameover UI
+    {
+        previousMode = menu;
+        menu = 5;
+        stopGameWorld();
+        startMenu.SetActive(false);
+        optionsMenu.SetActive(false);
+        exitMenu.SetActive(false);
+        pauseMenu.SetActive(false);
+        HUD.SetActive(false);
+        gameOver.SetActive(true);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -278,6 +305,42 @@ public class Start_Menu_Script : MonoBehaviour
                 }
             }
         }
+
+        //health Icon images == 0:safe, 1:detected, 2:lit up, 3: low health, 4:lowHealth&detected
+        if (ps.healthScore < ps.MaxHealthScore / 3)//low health and detected
+        {
+            healthIcon.sprite = healthIconImages[4];
+        }
+        else { 
+            if (ps.healthScore < ps.MaxHealthScore / 3)//low health
+            {
+                healthIcon.sprite = healthIconImages[3];
+            }
+            else
+            {
+                if (ps.detected)//detected
+                {
+                    healthIcon.sprite = healthIconImages[1];
+                }
+                else
+                {
+                    if (ps.playerLit)//lit up
+                    {
+                        healthIcon.sprite = healthIconImages[2];
+                    }
+                    else
+                    {
+                        healthIcon.sprite = healthIconImages[0];//normal mode
+                    }
+                }
+            }
+        }
+
+        if(ps.healthScore <= 0f && ps.healthModeActive)
+        {
+            gameOverMenu();
+        }
+
         /*
         if (Input.GetKey(KeyCode.F1) && menu == 0 && devOp)
         {

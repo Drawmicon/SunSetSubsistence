@@ -21,6 +21,7 @@ public class lightVisibility : MonoBehaviour
     private float defaultIntensity;
     public float flickerRange;
     public float dimRate;
+
         // Start is called before the first frame update
     void Start()
     {
@@ -117,19 +118,26 @@ public class lightVisibility : MonoBehaviour
             {
                 player.GetComponentInParent<player_Script>().playerLit = true;
                 //Call SetColor using the shader property name "_Color" and setting the color to red
-                //playerRenderer.material.SetColor("_Color", Color.red);               
+                //playerRenderer.material.SetColor("_Color", Color.red);       
             }
             else
             {
-                player.GetComponentInParent<player_Script>().playerLit = false;
+                if (dn.dayTime == false)
+                {
+                    player.GetComponentInParent<player_Script>().playerLit = false;
+                }
                 //playerRenderer.material.SetColor("_Color", originalColor);
                 
             }
         }
         else
         {
+            if (dn.dayTime == false)
+            {
+                player.GetComponentInParent<player_Script>().playerLit = false;
+            }
             //playerRenderer.material.SetColor("_Color",originalColor);
-            
+
         }
     }
 }

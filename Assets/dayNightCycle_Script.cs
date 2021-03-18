@@ -7,6 +7,8 @@ public class dayNightCycle_Script : MonoBehaviour
     public GameObject ground;
     public GameObject sun;
     public GameObject moon;
+    private Light moonLight;
+    private Light sunLight;
     public GameObject player;
     
     public float sunAngle;//current angle of sun
@@ -35,9 +37,13 @@ public class dayNightCycle_Script : MonoBehaviour
         if (ground == null)
         { ground = GameObject.FindGameObjectWithTag("Ground"); }
         if (sun == null)
-        { sun = GameObject.FindGameObjectWithTag("Sun"); }
+        { sun = GameObject.FindGameObjectWithTag("Sun");
+            sunLight = sun.GetComponent<Light>();
+        }
         if (moon == null)
-        { moon = GameObject.FindGameObjectWithTag("Moon"); }
+        { moon = GameObject.FindGameObjectWithTag("Moon");
+            moonLight = moon.GetComponent<Light>();
+        }
         if (player == null)
         { player = GameObject.FindGameObjectWithTag("Player_Controller"); }
 
@@ -66,6 +72,17 @@ public class dayNightCycle_Script : MonoBehaviour
 
     void FixedUpdate()
     {
+        if(dayTime)
+        {
+            moonLight.enabled = false;
+            sunLight.enabled = true;
+        }
+        else
+        {
+            moonLight.enabled = true;
+            sunLight.enabled = false;
+        }
+
         if (forceSun)
         {
             transform.localRotation = Quaternion.Euler(forceSunAngle%360, 0, 0);
@@ -87,7 +104,7 @@ public class dayNightCycle_Script : MonoBehaviour
         {
 
             if (dayTime)//the sun has no position in skybox, so vector from sun to player not possible
-            {
+            {              
                 player.GetComponent<player_Script>().playerLit = true;
             }//else the playerlit will be false when out of light during night time
 

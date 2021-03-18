@@ -7,6 +7,11 @@ public class movementController : MonoBehaviour
     public dayNightCycle_Script dnc;
     public CharacterController controller;
     public float speed, runSpeed;
+
+    public Vector3 velocity;
+    public float gravity;
+
+     
     // Start is called before the first frame update
     void Start()
     {
@@ -27,6 +32,8 @@ public class movementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        velocity.y += gravity*Time.deltaTime;
+
         if (!dnc.dayTime)
         {
             float x = Input.GetAxis("Horizontal");
@@ -34,5 +41,6 @@ public class movementController : MonoBehaviour
             Vector3 move = transform.right * x + transform.forward * z;
             controller.Move(move * speed * Time.deltaTime);
         }
+        controller.Move(velocity * Time.deltaTime);
     }
 }
