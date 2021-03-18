@@ -26,7 +26,6 @@ public class thirdPersonController : MonoBehaviour
         controller = GetComponent<CharacterController>();
         dn = (GameObject.FindGameObjectWithTag("SunMoonController")).GetComponent<dayNightCycle_Script>();
 
-
         if (player == null)
         {
             player = GameObject.FindGameObjectWithTag("Player");
@@ -50,6 +49,17 @@ public class thirdPersonController : MonoBehaviour
 
             if (vertical != 0)
             {
+                if (Input.GetKeyDown(KeyCode.LeftShift) && speed <= maxSpeed)
+                {
+                    speed += accelerations;
+                }
+                else
+                {
+                    if(speed > originalSpeed)
+                    {
+                        speed -= accelerations;
+                    }
+                }
                 controller.SimpleMove(transform.forward * speed * vertical);
             }
 

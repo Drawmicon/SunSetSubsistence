@@ -7,6 +7,7 @@ public class dayNightCycle_Script : MonoBehaviour
     public GameObject ground;
     public GameObject sun;
     public GameObject moon;
+    public GameObject player;
     
     public float sunAngle;//current angle of sun
     public float sunRate;
@@ -16,7 +17,6 @@ public class dayNightCycle_Script : MonoBehaviour
     public int dayCounter = 0;
 
     RaycastHit hit;
-    bool cycleOn;
     Vector3 parallel;
 
     float lengthOfDay;
@@ -24,10 +24,12 @@ public class dayNightCycle_Script : MonoBehaviour
     public float nightStart, nightEnd;
     public bool dayTime;
 
+    public bool forceSun;
+    public float forceSunAngle;
+
     // Start is called before the first frame update
     void Start()
     {
-        cycleOn = true;
 
         //find light, terrain, etc objects 
         if (ground == null)
@@ -36,6 +38,8 @@ public class dayNightCycle_Script : MonoBehaviour
         { sun = GameObject.FindGameObjectWithTag("Sun"); }
         if (moon == null)
         { moon = GameObject.FindGameObjectWithTag("Moon"); }
+        if (player == null)
+        { player = GameObject.FindGameObjectWithTag("Player_Controller"); }
 
         //position pivot to center of terrain
         this.transform.position = ground.transform.position;
@@ -60,126 +64,57 @@ public class dayNightCycle_Script : MonoBehaviour
         //************************************
     }
 
-
     void FixedUpdate()
     {
-        //if normal speed, sun rotation rate is normal, else, use quick rate
-        if (normalSpeed)
+        if (forceSun)
         {
-            sunAngle += Time.deltaTime * sunRate;
-        }
-        else { sunAngle += Time.deltaTime * sunQuickRate; }
+            transform.localRotation = Quaternion.Euler(forceSunAngle%360, 0, 0);
+            if (forceSunAngle % 360 > nightStart && forceSunAngle % 360 < nightEnd)
+            {
+                dayTime = true;
+            }
+            else
+            {
+                dayTime = false;
+            }
 
-        //if sun set, daytime is on, and day counter is incremented
-        if (sunAngle >= 360)
-        {
-            sunAngle %= 360;
-            dayCounter++;
-        }
-
-        if (sunAngle > nightStart && sunAngle < nightEnd)
-        {
-            dayTime = true;
-        }
-        else
-        {
-            dayTime = false;
-        }
-
-        transform.localRotation = Quaternion.Euler(sunAngle, 0, 0);
-    }
-
-    /*
-    private void setSun(float angle)
-    {
-        //set sun to local angle instantly
-    }
-
-    public static float Clamp0360(float eulerAngles)
-    {
-        float result = eulerAngles - Mathf.CeilToInt(eulerAngles / 360f) * 360f;
-        if (result < 0)
-        {
-            result += 360f;
-        }
-        return result;
-    }
-
-    // Applies a rotation of 90 degrees per second around the Y axis
-    void Update()
-    {
-        if (normalSpeed) {
-            transform.rotation *= Quaternion.AngleAxis(sunRate*Time.deltaTime, Vector3.right);
-            //sunAngle = sunRate * Time.deltaTime;
+            if (dayTime)//the sun has no position in skybox, so vector from sun to player not possible
+            {
+                player.GetComponent<player_Script>().playerLit = true;
+            }//else the playerlit will be false when out of light during night time
         }
         else
         {
-            transform.rotation *= Quaternion.AngleAxis(sunQuickRate*Time.deltaTime, Vector3.right);
-            //sunAngle = sunQuickRate * Time.deltaTime;
-        }
-        sunAngle = Clamp0360(transform.localEulerAngles.x);
-       
-    }
-    */
 
-    //sunset = ~80 degrees
-    //sunrise = ~290 degrees
+            if (dayTime)//the sun has no position in skybox, so vector from sun to player not possible
+            {
+                player.GetComponent<player_Script>().playerLit = true;
+            }//else the playerlit will be false when out of light during night time
 
-    /*
-    // Update is called once per frame                                               
-    void Update()
-    {
-    
-        sunAngle = this.transform.localEulerAngles.x;
-
-        if (sunAngle == 359)
-        {
-            lengthOfDay -= Time.time;
-            dayCounter++;
-            Debug.Log("Day: " + dayCounter + " , (" + lengthOfDay + ")");
-            lengthOfDay = Time.time;
-            //sunAngle %= 360;
-        }
-
-        if (cycleOn)
-        {
+            //if normal speed, sun rotation rate is normal, else, use quick rate
             if (normalSpeed)
             {
-                //sunAngle += sunRate* Time.deltaTime;
-                //rotate pivot on local x axis
-                //this.transform.RotateAround(this.transform.position, transform.right, (sunRate / (60 * 60 * 24)) * Time.deltaTime);
-                this.transform.Rotate((sunRate / (60 * 60 * 24)), 0.0f, 0.0f, Space.Self);//86,400
-
-                //this.transform.eulerAngles.x = Mathf.Atan2(transform.forward.z, transform.forward.x) * Mathf.Rad2Deg;
-
-                //Vector3 eulers = this.transform.rotation.eulerAngles;
-                //this.transform.rotation = Quaternion.Euler(new Vector3(sunAngle, eulers.y, eulers.z));
+                sunAngle += Time.deltaTime * sunRate;
             }
-            else 
+            else { sunAngle += Time.deltaTime * sunQuickRate; }
+
+            //if sun set, daytime is on, and day counter is incremented
+            if (sunAngle >= 360)
             {
-                //use sunQuickRate 
-                //sunAngle += sunQuickRate * Time.deltaTime;
-                //Vector3 eulers = this.transform.rotation.eulerAngles;
-                //this.transform.rotation = Quaternion.Euler(new Vector3(sunAngle, eulers.y, eulers.z));
-                this.transform.Rotate((sunQuickRate / (60 * 60 * 24)), 0.0f, 0.0f, Space.Self);//86,400
+                sunAngle %= 360;
+                dayCounter++;
             }
 
-        }
-        else
-        {
-            Debug.Log("Sun and Moon rotation is off");           
-        }
-        Debug.DrawRay(this.transform.position, this.transform.eulerAngles*100, Color.green);
-        //sunAngle = ((Vector3.Angle(sun.transform.eulerAngles, transform.forward))/360)/360;
-        //sunAngle = ((Vector3.Angle(sun.transform.eulerAngles, transform.forward)) * ((Vector3.Angle(sun.transform.eulerAngles, transform.forward))/360));
-        
+            if (sunAngle > nightStart && sunAngle < nightEnd)
+            {
+                dayTime = true;
+            }
+            else
+            {
+                dayTime = false;
+            }
 
-       // Vector3 sun2d = Vector3.Project(sun.transform.position, Vector3.forward);
-       // Vector3 center2d = Vector3.Project(transform.position, Vector3.forward);
-        //
-       // sunAngle = ((Vector3.Angle(sun2d, center2d)));
-
-        //sun.transform.LookAt(transform.position);//light source is just vector of light direction
-        //RotateAround(Vector3 point, Vector3 axis, float angle);
-    }*/
+            transform.localRotation = Quaternion.Euler(sunAngle, 0, 0);
+        }
+    }
 }

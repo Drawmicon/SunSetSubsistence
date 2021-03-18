@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class foodScript : MonoBehaviour
 {
@@ -22,6 +23,9 @@ public class foodScript : MonoBehaviour
     //public float delay;
     public float baseHealth;
 
+    //navmeshobstacle 
+    public NavMeshObstacle nmo;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -31,6 +35,15 @@ public class foodScript : MonoBehaviour
 
         vv = new Vector3(0f, -1f, 0f);
         aa = new Vector3(0f, 1f, 0f);
+
+        if(GetComponent<NavMeshObstacle>() != null)
+        {
+            nmo = GetComponent<NavMeshObstacle>();
+
+            Mesh mesh = GetComponent<MeshFilter>().mesh;
+            nmo.shape = NavMeshObstacleShape.Box;
+            nmo.size = mesh.bounds.size;
+        }
     }
 
     // Update is called once per frame
@@ -72,13 +85,13 @@ public class foodScript : MonoBehaviour
         Destroy(this);
     }
 
+
     void OnTriggerEnter(Collider player)
     {
-        if (player.tag == "Player")
+        if (player.gameObject.tag == "Player")
         {
             Debug.Log(player.name+" ("+player.tag + ") Detected!");
-
-
+            //Debug.Log(player.name+" ("+player.tag + "): Health("+player.GetComponent<player_Script>().healthScore+") + "+healthScore);
             /*
             if (Input.getKey(“Obtain”))
             {*/
@@ -93,13 +106,14 @@ public class foodScript : MonoBehaviour
             //shrink();
             /*  }
               else
-      {
+            {
                   //rejectEating.play();
-              }*/
-            Destroy(this.gameObject);
+            }*/
+                Destroy(this.gameObject);
             }
     }
 
+    //on destroy adds timer to correct position of spawned object, so it can respawn at that time
     void OnDestroy()//Add to enemy script
     {
         if (this.transform.parent != null)
