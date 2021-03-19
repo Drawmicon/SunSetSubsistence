@@ -7,14 +7,24 @@ public class movementController : MonoBehaviour
     public dayNightCycle_Script dnc;
     public CharacterController controller;
     public float speed, runSpeed;
+    private float defaultSpeed;
 
     public Vector3 velocity;
-    public float gravity;
+    public float gravity, normalGravity, glideGravity;
+    public LayerMask ground;
 
+    public float jumpForce;
+
+    private bool glideMode;
+
+    public float wingTime, maxWingTime;
      
     // Start is called before the first frame update
     void Start()
     {
+        glideMode = false;
+        normalGravity = gravity;
+        defaultSpeed = speed;
         if(dnc == null)
         {
             dnc = GameObject.FindGameObjectWithTag("SunMoonController").GetComponent<dayNightCycle_Script>();
@@ -32,7 +42,20 @@ public class movementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        velocity.y += gravity*Time.deltaTime;
+
+        if(glideMode)
+        {
+            gravity = glideGravity;
+        }
+        else
+        {
+            gravity = normalGravity;
+        }
+
+        if (controller.isGrounded && velocity.y<0)//if not grounded and downward force is less than zero
+        {
+            velocity.y = -2;
+        }
 
         if (!dnc.dayTime)
         {
@@ -41,6 +64,44 @@ public class movementController : MonoBehaviour
             Vector3 move = transform.right * x + transform.forward * z;
             controller.Move(move * speed * Time.deltaTime);
         }
+
+        velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+
+
+        if (Input.GetKeyDown("space"))
+        {
+            if (wingTime <= 0f)
+            {
+                velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+                wingTime = maxWingTime;
+            }
+        }
+        else
+        {
+            if (wingTime > 0f)
+            {
+                wingTime -= Time.deltaTime;
+            }
+        }
+
+        if (Input.GetKey("space"))
+        {
+            glideMode = true;
+        }
+        else
+        {
+            glideMode = false;
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            speed = runSpeed;
+        }
+        else
+        {
+            speed = defaultSpeed;
+        }
     }
+    //https://www.youtube.com/watch?v=_QajrabyTJc&ab_channel=Brackeys
 }

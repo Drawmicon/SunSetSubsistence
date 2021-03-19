@@ -149,6 +149,18 @@ public class enemy_detection : MonoBehaviour
         return rotatedVector;
     }
 
+    //*********************************************************
+    //*********************************************************
+    //*********************************************************
+    Vector3 viewFocusVector()
+    {
+
+        //
+        return enemyForwardDirection;
+    }
+    //*********************************************************
+    //*********************************************************
+    //*********************************************************
 
     // Update is called once per frame
     void Update()
@@ -280,6 +292,17 @@ public class enemy_detection : MonoBehaviour
                     enemyViewPoint = rotateVector(enemyForwardDirection, Random.Range(0f, coneDetectionRadius), Random.Range(0f, coneDetectionRadius), Random.Range(0f, coneDetectionRadius));
                     //enemyViewPoint = RandomPointInCircle(this.transform.parent.transform.forward*distance, coneDetectionRadius, Random.Range(0, coneDetectionRadius));
                     //In different script, move enemy view object to location in circle in front of vector.forward of enemy
+
+                    /*
+                     
+                     !!!!!!!!
+                    !!!!!!!!!!
+                    !!!!!!!!!!
+                     !!!!!!!!
+
+                       !!!
+                       !!!
+                     */
                 }
                 else
                 {
