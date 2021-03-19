@@ -20,6 +20,7 @@ public class movementController : MonoBehaviour
     public float wingTime, maxWingTime;
 
     public player_Script ps;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -71,7 +72,7 @@ public class movementController : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
 
 
-        if (Input.GetKeyDown("space") && ps.healthScore > 0f)
+        if (Input.GetKeyDown("space") && ps.healthScore > 0f && !dnc.dayTime)//check mode of menu script for maximum security
         {
             if (wingTime <= 0f)
             {

@@ -113,6 +113,7 @@
     <Compile Include="Assets\enemyViewTarget.cs" />
     <Compile Include="Assets\enemy_detect.cs" />
     <Compile Include="Assets\enemy_detection.cs" />
+    <Compile Include="Assets\fireStarter.cs" />
     <Compile Include="Assets\flyInCircle.cs" />
     <Compile Include="Assets\foodScript.cs" />
     <Compile Include="Assets\gargoyleCameraSequence.cs" />
@@ -140,7 +141,9 @@
     <None Include="Assets\Samples\Cinemachine\2.7.1\Cinemachine Example Scenes\Scenes\Anywhere Door\ScreenCutoutShader.shader" />
     <None Include="Assets\shader_blur.shader" />
     <None Include="Assets\FelineGargoyle\readme_first.txt" />
+    <None Include="Assets\Hovl Studio\Procedural fire\Shaders\FireSphere.shader" />
     <None Include="Assets\blurShader.shader" />
+    <None Include="Assets\Hovl Studio\Procedural fire\Demo scene\Readme.txt" />
     <None Include="Assets\VertexColorFarmAnimals\Shaders\VertexColorUnlit.shader" />
     <Reference Include="UnityEngine">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.4.0f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>

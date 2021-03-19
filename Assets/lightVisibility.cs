@@ -6,6 +6,7 @@ public class lightVisibility : MonoBehaviour
 {
 
     public GameObject player;
+    public GameObject fireObject;
     public bool playerInLight;
     public float lightDistance;
     public Vector3 light2playerVec;
@@ -90,6 +91,7 @@ public class lightVisibility : MonoBehaviour
             if (lt.range > 0)//if intensity is above 0, reduce
             {
                 lt.range -= dimRate;
+                fireObject.SetActive(false);
             }
             //lt.range = 0;
             //raymond = 0f;
@@ -99,6 +101,7 @@ public class lightVisibility : MonoBehaviour
             if (lt.range < lightDistance * 1.3f)//if intensity is less than max, increase
             {
                 lt.range += dimRate;
+                fireObject.SetActive(true);
             }
 
             //lt.range = lightDistance * 1.3f;

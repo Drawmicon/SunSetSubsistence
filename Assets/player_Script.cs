@@ -10,7 +10,7 @@ public class player_Script : MonoBehaviour
     public float camRotSpeed;
 
     public bool gargVisible = true;
-    public GameObject garg;
+    public GameObject garg, rubble;
     public Slider healthBar;
     public GameObject player;
     public CharacterController pCon;
@@ -43,6 +43,7 @@ public class player_Script : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        rubble.SetActive(false);
         if (GameObject.FindGameObjectWithTag("Gargoyle") != null)
         {
             garg = GameObject.FindGameObjectWithTag("Gargoyle");
@@ -92,12 +93,15 @@ public class player_Script : MonoBehaviour
     {
         isGrounded = Physics.CheckSphere(groundChecker.position, groundDistance, groundMask);
         if(cce.atParentPosition)
-        {
-            garg.SetActive(false);
+        {           
+                garg.SetActive(false);
         }
         else
         {
-            garg.SetActive(true);
+            if (healthScore > 0)
+            {
+                garg.SetActive(true);
+            }
         }
 
         healthBar.value = playerHealthSlider();

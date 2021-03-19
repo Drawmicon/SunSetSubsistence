@@ -277,6 +277,8 @@ public class Start_Menu_Script : MonoBehaviour
         HUD.SetActive(false);
         gameOver.SetActive(true);
         ccc.switchCamMode = false;
+        //ps.garg.SetActive(false);
+        ps.rubble.SetActive(true);
     }
 
     // Update is called once per frame

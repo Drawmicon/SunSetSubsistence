@@ -125,7 +125,7 @@ public class spawning_script : MonoBehaviour
 				cirleSpawnPositions();
 			}
 
-			if (farm.transform.childCount < maxSpawn)
+			if (farm.transform.childCount < maxSpawn && prefab.Length > 0f)
 			{
 				for (int i = 0; i < positions.Length; i++)
 				{
