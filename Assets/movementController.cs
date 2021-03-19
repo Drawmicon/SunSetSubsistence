@@ -18,7 +18,8 @@ public class movementController : MonoBehaviour
     private bool glideMode;
 
     public float wingTime, maxWingTime;
-     
+
+    public player_Script ps;
     // Start is called before the first frame update
     void Start()
     {
@@ -37,6 +38,7 @@ public class movementController : MonoBehaviour
         {
             Debug.LogError("moveController script is unable to get character controller component from player");
         }
+        ps = GameObject.FindGameObjectWithTag("Player").GetComponent<player_Script>();
     }
 
     // Update is called once per frame
@@ -57,7 +59,7 @@ public class movementController : MonoBehaviour
             velocity.y = -2;
         }
 
-        if (!dnc.dayTime)
+        if (!dnc.dayTime && ps.healthScore > 0f)
         {
             float x = Input.GetAxis("Horizontal");
             float z = Input.GetAxis("Vertical");
@@ -69,7 +71,7 @@ public class movementController : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
 
 
-        if (Input.GetKeyDown("space"))
+        if (Input.GetKeyDown("space") && ps.healthScore > 0f)
         {
             if (wingTime <= 0f)
             {
@@ -85,7 +87,7 @@ public class movementController : MonoBehaviour
             }
         }
 
-        if (Input.GetKey("space"))
+        if (Input.GetKey("space") && ps.healthScore > 0f)
         {
             glideMode = true;
         }
@@ -94,7 +96,7 @@ public class movementController : MonoBehaviour
             glideMode = false;
         }
 
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftShift) && controller.isGrounded && ps.healthScore > 0f)
         {
             speed = runSpeed;
         }

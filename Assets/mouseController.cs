@@ -9,6 +9,8 @@ public class mouseController : MonoBehaviour
     private float xRotation = 0f;
 
     public dayNightCycle_Script dnc;
+
+    public cinemaCameraController ccc;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,12 +23,15 @@ public class mouseController : MonoBehaviour
         {
             dnc = GameObject.FindGameObjectWithTag("SunMoonController").GetComponent<dayNightCycle_Script>();
         }
+
+        ccc = playerBody.GetComponentInChildren<cinemaCameraController>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!dnc.dayTime) 
+        //if night time and using gameplay cam
+        if (!dnc.dayTime && ccc.switchCamMode) //switchCamMod(true) == gameplay cam
         {
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;

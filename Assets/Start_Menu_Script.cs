@@ -17,7 +17,7 @@ public class Start_Menu_Script : MonoBehaviour
     public GameObject gameOver;
 
     public int menu; //0:no menu, 1:title menu, 2: options menu, 3:exit game, 4:pause, 5:gameover
-    public Text subtitle;
+    public Text subtitle, survivalTime;
     private string[] subOptions;
 
     public int previousMode = 1;
@@ -32,6 +32,8 @@ public class Start_Menu_Script : MonoBehaviour
     public Sprite[] healthIconImages; //health Icon images == 0:safe, 1:detected, 2:lit up, 3: low health
 
     public player_Script ps;
+
+    public dayNightCycle_Script dnc;
     // Start is called before the first frame update
     void Start()
     {
@@ -56,30 +58,13 @@ public class Start_Menu_Script : MonoBehaviour
             ps = GameObject.FindGameObjectWithTag("Player").GetComponent<player_Script>();
         }
         ps.healthModeActive = false;
+
+        dnc = (GameObject.FindGameObjectWithTag("SunMoonController")).GetComponent<dayNightCycle_Script>();
     }
     
     public void swapCams()
     {
         ccc.switchCamMode = true;
-        /*
-        if(main.enabled)
-        {
-            ccc.currentAngle = 180f;
-            ccc.switchCamMode = false ;
-            main.enabled = false;
-            cinema.enabled = true;
-            
-        }
-        else
-        {
-            ccc.switchCamMode = false;
-            if (cce.atParentPosition)
-            {
-                main.enabled = true;
-                cinema.enabled = false;
-            }
-        }
-        */
     }
 
     public void disableUI()
@@ -122,7 +107,7 @@ public class Start_Menu_Script : MonoBehaviour
     public void newGame()
     {
         previousMode = 1;
-        SceneManager.LoadScene("GameWorld_0");
+        SceneManager.LoadScene("GameWorld_1");
     }//restarts scene
 
     public void startButton()//exit UI and starts game world time
@@ -165,14 +150,15 @@ public class Start_Menu_Script : MonoBehaviour
     public void resumeButton()//resume game, exit ui
     {
         previousMode = menu;
-        menu = 0;
+        disableUINotHUD();
+       /* menu = 0;
         resumeGameWorld();
         startMenu.SetActive(false);
         optionsMenu.SetActive(false);
         exitMenu.SetActive(false);
         pauseMenu.SetActive(false);
         HUD.SetActive(true);
-        gameObject.SetActive(false);
+        gameObject.SetActive(false);*/
     }
 
     public void stopGameWorld()
@@ -269,6 +255,10 @@ public class Start_Menu_Script : MonoBehaviour
                 stopGameWorld();
                 break;
 
+            case 5://game over menu
+                gameOverMenu();
+                break;
+
             default:
                 resumeButton() ;
                 break;
@@ -279,13 +269,14 @@ public class Start_Menu_Script : MonoBehaviour
     {
         previousMode = menu;
         menu = 5;
-        stopGameWorld();
+        resumeGameWorld();
         startMenu.SetActive(false);
         optionsMenu.SetActive(false);
         exitMenu.SetActive(false);
         pauseMenu.SetActive(false);
         HUD.SetActive(false);
         gameOver.SetActive(true);
+        ccc.switchCamMode = false;
     }
 
     // Update is called once per frame
@@ -340,6 +331,8 @@ public class Start_Menu_Script : MonoBehaviour
         {
             gameOverMenu();
         }
+
+        survivalTime.text = "Survival Time: " + dnc.dayCounter + " days...";
 
         /*
         if (Input.GetKey(KeyCode.F1) && menu == 0 && devOp)

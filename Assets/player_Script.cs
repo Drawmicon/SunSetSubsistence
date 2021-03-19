@@ -20,6 +20,8 @@ public class player_Script : MonoBehaviour
     public float lunarDegenRate;
     public bool healthModeActive;
     public bool playerLit;
+
+    public bool isGrounded;
     public Vector3 lastGroundedPosition;
     //private lightVisibility dn;
     public dayNightCycle_Script dnc;
@@ -33,6 +35,10 @@ public class player_Script : MonoBehaviour
 
     public cinemaCameraController ccc;
     public cinemaCameraExtra cce;
+
+    public Transform groundChecker;
+    public float groundDistance;
+    public LayerMask groundMask;
 
     // Start is called before the first frame update
     void Start()
@@ -84,6 +90,7 @@ public class player_Script : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        isGrounded = Physics.CheckSphere(groundChecker.position, groundDistance, groundMask);
         if(cce.atParentPosition)
         {
             garg.SetActive(false);
@@ -95,7 +102,7 @@ public class player_Script : MonoBehaviour
 
         healthBar.value = playerHealthSlider();
 
-        if (pCon.isGrounded)
+        if (isGrounded)
         {
            lastGroundedPosition = player.transform.position;
         }
@@ -126,22 +133,13 @@ public class player_Script : MonoBehaviour
                         dnc.normalSpeed = true;
                         healthScore -= lunarDegenRate * Time.deltaTime;
                     
-                    ccc.switchCamMode = true;
+                        ccc.switchCamMode = true;
                     }
                 }
             }
         }
 
-        /*if (stepCounter <= 0f)//gets current and former positions every time interval
-        {
-            step2 = step1;
-            step1 = this.transform.position;
-            stepCounter = stepCounterMax;
-        }
-        else
-        {
-            stepCounter -= Time.deltaTime;   
-        }*/
+        
         
         //
         if(detected)//if player is found
@@ -165,6 +163,10 @@ public class player_Script : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if(collision.gameObject.tag == "Water")
+        {
+            this.transform.position = lastGroundedPosition;
+        }
         //start fire delay damage timer
         //once <= 0, take damage based on size of object: Collider.bounds.size;
 

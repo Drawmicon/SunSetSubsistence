@@ -18,15 +18,8 @@ public class reposition_collider : MonoBehaviour
         pScript = player.gameObject.GetComponent<player_Script>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void OnCollisionEnter(Collision collision)
     {       
-
         if(collision.transform.tag == "Player_Controller" || collision.transform.tag == "Player")
         {
             Vector3 xr = new Vector3(pScript.lastGroundedPosition.x, pScript.lastGroundedPosition.y + 1, pScript.lastGroundedPosition.z);
