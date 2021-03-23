@@ -44,7 +44,7 @@ public class cinemaCameraController : MonoBehaviour
         else
         {
             rotSpeed = maxRotSpeed;
-            if (currentAngle <= stoppingAngle%360-5 || currentAngle >= stoppingAngle%360+5)//if not current angle to stop at, keep rotating
+            if (currentAngle <= stoppingAngle%360-10 || currentAngle >= stoppingAngle%360+10)//if not current angle to stop at, keep rotating
             {
                 transform.localRotation = Quaternion.Euler(0, currentAngle, 0);
                 currentAngle += Time.unscaledDeltaTime * rotSpeed;

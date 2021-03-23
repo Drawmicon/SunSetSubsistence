@@ -11,16 +11,19 @@ public class movementController : MonoBehaviour
 
     public Vector3 velocity;
     public float gravity, normalGravity, glideGravity;
-    public LayerMask ground;
+    public LayerMask [] ground;
 
-    public float jumpForce;
+    public float jumpForce, bumpForce;
 
     private bool glideMode;
 
-    public float wingTime, maxWingTime;
+    public float wingTime, maxWingTime;//timer for wings to rest action
 
     public player_Script ps;
 
+    public float fallVelocity;
+
+    public float punchDamage;
     // Start is called before the first frame update
     void Start()
     {
@@ -40,6 +43,12 @@ public class movementController : MonoBehaviour
             Debug.LogError("moveController script is unable to get character controller component from player");
         }
         ps = GameObject.FindGameObjectWithTag("Player").GetComponent<player_Script>();
+    }
+
+    public void punchForce(Vector3 punch)
+    {
+        ps.healthScore -= punchDamage;
+        velocity += punch;       
     }
 
     // Update is called once per frame
@@ -105,6 +114,29 @@ public class movementController : MonoBehaviour
         {
             speed = defaultSpeed;
         }
+
+        //fall damage: velocity of gravity aceleration > x value
+        if(Mathf.Abs(velocity.y) > fallVelocity && ps.isGrounded)//if player fall velocity is high and is grounded, add damage and bounce force
+        {
+            Debug.Log("Player recieved fall damage " + Mathf.Abs(velocity.y * .1f));
+            ps.healthScore -= fallVelocity * 0.1f;
+            velocity.y = Mathf.Sqrt(bumpForce * -2f * gravity);
+        }
     }
     //https://www.youtube.com/watch?v=_QajrabyTJc&ab_channel=Brackeys
+
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        //enemy punch player
+        if(collision.gameObject.tag == "enemyAttack" || collision.gameObject.tag == "wall")
+        {
+            Vector3 dir = collision.contacts[0].point - transform.position;
+            // We then get the opposite (-Vector3) and normalize it
+            dir = -dir.normalized;
+            // And finally we add force in the direction of dir and multiply it by force. 
+            // This will push back the player
+            punchForce(dir*punchDamage);
+        }
+    }
 }
