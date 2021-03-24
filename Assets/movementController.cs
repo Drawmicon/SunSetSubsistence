@@ -24,9 +24,18 @@ public class movementController : MonoBehaviour
     public float fallVelocity;
 
     public float punchDamage;
+
+    public soundCollider sc;//controls sound collider size
+    private Vector3 curPos, lastPos;//
+    public bool playerMoving;//checks if their is movement for the player
     // Start is called before the first frame update
     void Start()
     {
+        if (sc == null)
+        {
+            sc = GameObject.FindGameObjectWithTag("playerSound").GetComponent<soundCollider>();
+        }
+
         glideMode = false;
         normalGravity = gravity;
         defaultSpeed = speed;
@@ -44,6 +53,16 @@ public class movementController : MonoBehaviour
         }
         ps = GameObject.FindGameObjectWithTag("Player").GetComponent<player_Script>();
     }
+    public void isMoving()//check if player is moving and grounded
+    {
+        curPos = transform.position;
+        if (curPos == lastPos && ps.isGrounded)
+        {
+            playerMoving = false;
+        }
+        else { playerMoving = true; }
+        lastPos = curPos;
+    }
 
     public void punchForce(Vector3 punch)
     {
@@ -54,8 +73,9 @@ public class movementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        isMoving();// check if player is moving on ground
 
-        if(glideMode)
+        if (glideMode)
         {
             gravity = glideGravity;
         }
@@ -80,7 +100,7 @@ public class movementController : MonoBehaviour
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
 
-
+        /*
         if (Input.GetKeyDown("space") && ps.healthScore > 0f && !dnc.dayTime)//check mode of menu script for maximum security
         {
             if (wingTime <= 0f)
@@ -96,22 +116,51 @@ public class movementController : MonoBehaviour
                 wingTime -= Time.deltaTime;
             }
         }
-
-        if (Input.GetKey("space") && ps.healthScore > 0f)
+        */
+        if (Input.GetKeyDown("space") && !dnc.dayTime)//check mode of menu script for maximum security
         {
-            glideMode = true;
+            if (wingTime <= 0f && ps.isGrounded)// if wing rest is done and is grounded
+            {
+                velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+                wingTime = maxWingTime;
+                glideMode = false;
+            }
+            else
+            {
+                if (wingTime <= 0f && ps.healthScore > ps.MaxHealthScore * .75)//if wing rest is done and health is greater than half of max
+                {
+                    velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+                    wingTime = maxWingTime;
+                    glideMode = true;
+                }
+            }
+
         }
         else
         {
             glideMode = false;
+            if (wingTime > 0f)
+            {
+                wingTime -= Time.deltaTime;
+            }
         }
+        //***********************************************
 
         if (Input.GetKey(KeyCode.LeftShift) && controller.isGrounded && ps.healthScore > 0f)
         {
+            if(playerMoving)
+            {
+                sc.loud = true;
+            }
+            else
+            {
+                sc.loud = false;
+            }
             speed = runSpeed;
         }
         else
         {
+            sc.loud = false;
             speed = defaultSpeed;
         }
 

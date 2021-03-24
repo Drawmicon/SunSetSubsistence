@@ -5,7 +5,7 @@ using UnityEngine;
 public class soundCollider : MonoBehaviour//THIS REPRESENTS THE SOUND PRODUCED BY THE GAMEOBJECT    
 {
     public bool loud;
-    public float colliderSize, standardColliderSize, maxColliderSize;
+    public float standardColliderSize, maxColliderSize;
     private SphereCollider collin;
     public float sizeRate;
     // Start is called before the first frame update
@@ -15,7 +15,7 @@ public class soundCollider : MonoBehaviour//THIS REPRESENTS THE SOUND PRODUCED B
         
        collin = GetComponent<SphereCollider>();
 
-        standardColliderSize = collin.radius;
+        //standardColliderSize = collin.radius;
     }
 
     // Update is called once per frame

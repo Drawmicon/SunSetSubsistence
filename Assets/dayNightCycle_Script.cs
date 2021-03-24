@@ -12,7 +12,6 @@ public class dayNightCycle_Script : MonoBehaviour
     public GameObject player;
     
     public float sunAngle;//current angle of sun
-    public float sunRate;
     public float sunQuickRate;
     public bool normalSpeed = true;
 
@@ -29,9 +28,34 @@ public class dayNightCycle_Script : MonoBehaviour
     public bool forceSun;
     public float forceSunAngle;
 
+    public float sunRate;//rate at which sun angle increases
+    public float secondsOfDayTime, secondsOfNightTime;//number of seconds for night mode
+
     // Start is called before the first frame update
     void Start()
     {
+
+        
+        //*****************************************
+        if (secondsOfNightTime > 165f)
+        {
+            //night starts at 200 degrees to 5 degrees --> 165 degrees total
+            sunRate = 165f / secondsOfNightTime;
+        }
+        else
+        {
+            secondsOfNightTime = 165;
+        }
+
+        if (sunQuickRate > 0f)
+        {
+            secondsOfDayTime = (360 - 165) / sunQuickRate;
+        }
+        else
+        {
+            secondsOfDayTime = 6.5f;
+        }
+        //*******************************
 
         //find light, terrain, etc objects 
         if (ground == null)

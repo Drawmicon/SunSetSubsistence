@@ -40,9 +40,22 @@ public class player_Script : MonoBehaviour
     public float groundDistance;
     public LayerMask groundMask;
 
+    public LayerMask waterMask;
+
+    public Collider playerCollider;
+    public float waterDamage;
+
     // Start is called before the first frame update
     void Start()
     {
+        /**/
+
+        //**************************
+        healthScore = MaxHealthScore;
+        solarRegenRate = (MaxHealthScore / 2) / 6.5f;// gives player half of full health extra every day
+        lunarDegenRate = (MaxHealthScore * 4) / 300; // removes player health at rate of 3 full lives per night
+        //*************************
+
         rubble.SetActive(false);
         if (GameObject.FindGameObjectWithTag("Gargoyle") != null)
         {
@@ -91,7 +104,13 @@ public class player_Script : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        isGrounded = Physics.CheckSphere(groundChecker.position, groundDistance, groundMask);
+        //if ground is detected, last grounded position is current position
+       if( isGrounded = Physics.CheckSphere(groundChecker.position, groundDistance, groundMask))
+        {
+            lastGroundedPosition = this.transform.position;
+        }
+
+       //cinemeatic camera control
         if(cce.atParentPosition)
         {           
                 garg.SetActive(false);
@@ -104,12 +123,8 @@ public class player_Script : MonoBehaviour
             }
         }
 
+        //UI health meter
         healthBar.value = playerHealthSlider();
-
-        if (isGrounded)
-        {
-           lastGroundedPosition = player.transform.position;
-        }
 
         if (healthModeActive)
         {
@@ -143,10 +158,16 @@ public class player_Script : MonoBehaviour
             }
         }
 
-        
-        
+        //if ground checker detects being on water, teleport to last on ground position
+        if (Physics.CheckSphere(groundChecker.position, groundDistance, waterMask))
+        {
+            this.transform.position = lastGroundedPosition;
+            //add water damage
+            healthScore -= waterDamage;
+        }
+
         //
-        if(detected)//if player is found
+        if (detected)//if player is found
         {
             if (stepTimer == 0f) //at each time interval
             { 
@@ -167,10 +188,6 @@ public class player_Script : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.tag == "Water")
-        {
-            this.transform.position = lastGroundedPosition;
-        }
         //start fire delay damage timer
         //once <= 0, take damage based on size of object: Collider.bounds.size;
 
