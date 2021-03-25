@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//Dont block player collider with anything, like the sound collider or such
 public class lightVisibility : MonoBehaviour
 {
 
@@ -23,6 +24,8 @@ public class lightVisibility : MonoBehaviour
     public float flickerRange;
     public float dimRate;
 
+    public player_Script ps;
+
         // Start is called before the first frame update
     void Start()
     {
@@ -32,6 +35,11 @@ public class lightVisibility : MonoBehaviour
         if (player == null)
         {
             player = GameObject.FindGameObjectWithTag("Player");
+        }
+
+        if(ps == null)
+        {
+            ps = player.GetComponent<player_Script>();
         }
 
         // Get the Renderer component from the new cube
@@ -111,7 +119,7 @@ public class lightVisibility : MonoBehaviour
         flicker(flickerRange);
         light2playerVec = (player.transform.position - this.transform.position).normalized;
         //light2playerVec = targetPoint - initialPoint;
-        Debug.DrawRay(this.transform.position, light2playerVec*raymond, Color.green);
+        Debug.DrawRay(this.transform.position, light2playerVec*raymond, Color.green);//line from light to player
         // Declare a raycast hit to store information about what our raycast has hit
         Ray lightHit = new Ray(this.transform.position, light2playerVec);
         RaycastHit hit;
@@ -119,25 +127,29 @@ public class lightVisibility : MonoBehaviour
         {
             if (hit.collider.tag == "Player")
             {
-                player.GetComponentInParent<player_Script>().playerLit = true;
+                Debug.Log("Raycast hit object: " + hit.collider.name + "(tag:" + hit.collider.tag + ")");
+                //player.GetComponentInParent<player_Script>().playerLit = true;
+                ps.playerLit = true;
                 //Call SetColor using the shader property name "_Color" and setting the color to red
                 //playerRenderer.material.SetColor("_Color", Color.red);       
             }
             else
             {
-                if (dn.dayTime == false)
+                Debug.Log("Raycast hit object: " + hit.collider.name + "(tag:" + hit.collider.tag + ")");
+                if (dn.dayTime == false)//if player is lit, but daytime, player is not lit by lamp
                 {
-                    player.GetComponentInParent<player_Script>().playerLit = false;
+                    //player.GetComponentInParent<player_Script>().playerLit = false;
+                    ps.playerLit = false;
                 }
                 //playerRenderer.material.SetColor("_Color", originalColor);
-                
             }
         }
         else
         {
             if (dn.dayTime == false)
             {
-                player.GetComponentInParent<player_Script>().playerLit = false;
+                //player.GetComponentInParent<player_Script>().playerLit = false;
+                ps.playerLit = false;
             }
             //playerRenderer.material.SetColor("_Color",originalColor);
 

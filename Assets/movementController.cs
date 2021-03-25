@@ -28,13 +28,21 @@ public class movementController : MonoBehaviour
     public soundCollider sc;//controls sound collider size
     private Vector3 curPos, lastPos;//
     public bool playerMoving;//checks if their is movement for the player
+
+    public armController ac;
+
+    public cinemaCameraExtra cce;
     // Start is called before the first frame update
     void Start()
     {
-        if (sc == null)
+        cce = GetComponentInChildren<cinemaCameraExtra>();
+
+        if (sc == null && GameObject.FindGameObjectWithTag("playerSound") != null)
         {
             sc = GameObject.FindGameObjectWithTag("playerSound").GetComponent<soundCollider>();
         }
+
+        ac = GetComponentInChildren<armController>();
 
         glideMode = false;
         normalGravity = gravity;
@@ -89,7 +97,7 @@ public class movementController : MonoBehaviour
             velocity.y = -2;
         }
 
-        if (!dnc.dayTime && ps.healthScore > 0f)
+        if (!dnc.dayTime && ps.healthScore > 0f && cce.atCinemaPosition == false)
         {
             float x = Input.GetAxis("Horizontal");
             float z = Input.GetAxis("Vertical");
@@ -117,7 +125,7 @@ public class movementController : MonoBehaviour
             }
         }
         */
-        if (Input.GetKeyDown("space") && !dnc.dayTime)//check mode of menu script for maximum security
+        if (Input.GetKeyDown("space") && !dnc.dayTime && cce.atCinemaPosition == false)//check mode of menu script for maximum security
         {
             if (wingTime <= 0f && ps.isGrounded)// if wing rest is done and is grounded
             {
@@ -146,30 +154,53 @@ public class movementController : MonoBehaviour
         }
         //***********************************************
 
-        if (Input.GetKey(KeyCode.LeftShift) && controller.isGrounded && ps.healthScore > 0f)
+        if (Input.GetKey(KeyCode.LeftShift) && controller.isGrounded && ps.healthScore > 0f && cce.atCinemaPosition == false)
         {
             if(playerMoving)
             {
-                sc.loud = true;
+                if (sc != null)
+                {
+                    sc.loud = true;
+                }
             }
             else
             {
-                sc.loud = false;
+                if (sc != null)
+                {
+                    sc.loud = false;
+                }
             }
             speed = runSpeed;
         }
         else
         {
-            sc.loud = false;
+            if (sc != null)
+            {
+                sc.loud = false;
+            }
             speed = defaultSpeed;
         }
 
         //fall damage: velocity of gravity aceleration > x value
-        if(Mathf.Abs(velocity.y) > fallVelocity && ps.isGrounded)//if player fall velocity is high and is grounded, add damage and bounce force
+        if(Mathf.Abs(velocity.y) > fallVelocity && ps.isGrounded && cce.atCinemaPosition == false)//if player fall velocity is high and is grounded, add damage and bounce force
         {
             Debug.Log("Player recieved fall damage " + Mathf.Abs(velocity.y * .1f));
             ps.healthScore -= fallVelocity * 0.1f;
             velocity.y = Mathf.Sqrt(bumpForce * -2f * gravity);
+            if (sc != null)
+            {
+                sc.collin.radius = sc.maxColliderSize;
+            }
+        }
+
+        //********Attack button**********************
+        if (Input.GetKeyDown(KeyCode.C) && !dnc.dayTime && cce.atCinemaPosition == false)//check if cinema camera is deactive
+        {
+            ac.swing = true;
+            if (sc != null && ac.swing == true)//also check if attack made contact
+            {
+                sc.collin.radius = sc.maxColliderSize;
+            }
         }
     }
     //https://www.youtube.com/watch?v=_QajrabyTJc&ab_channel=Brackeys

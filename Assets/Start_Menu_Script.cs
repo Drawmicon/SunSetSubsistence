@@ -43,7 +43,7 @@ public class Start_Menu_Script : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.Confined;
         }
-        subOptions = new string[] { "The Reign in Spain Falls Neatly in Distain", "Find Truth, Regardless On How Uncouth ", "Still in a dream, Snake Eater" };
+        subOptions = new string[] { "The Reign in Spain Falls Neatly in Distain", "Eat or be beaten", "Still in a dream, Snake Eater" };
         subtitle.text = subOptions[Random.Range(0, subOptions.Length)];
         stopGameWorld();
         startMenu.SetActive(true);

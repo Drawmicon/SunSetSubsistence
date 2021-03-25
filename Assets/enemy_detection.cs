@@ -49,6 +49,11 @@ public class enemy_detection : MonoBehaviour
     public float turnTimer, maxTurnTimer;
     private bool leftTurn;
 
+    //************************************
+
+
+
+
     // Start is called before the first frame update
     void Start()
     {

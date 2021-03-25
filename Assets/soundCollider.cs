@@ -6,7 +6,7 @@ public class soundCollider : MonoBehaviour//THIS REPRESENTS THE SOUND PRODUCED B
 {
     public bool loud;
     public float standardColliderSize, maxColliderSize;
-    private SphereCollider collin;
+    public SphereCollider collin;
     public float sizeRate;
     // Start is called before the first frame update
     void Start()

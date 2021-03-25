@@ -100,6 +100,8 @@
     <Compile Include="Assets\TestMesh\Assets\simpleNav.cs" />
     <Compile Include="Assets\ThirdPersonCameraControl.cs" />
     <Compile Include="Assets\ThirdPersonCharacterControl.cs" />
+    <Compile Include="Assets\armController.cs" />
+    <Compile Include="Assets\attackScript.cs" />
     <Compile Include="Assets\audioController.cs" />
     <Compile Include="Assets\bigSpotlight.cs" />
     <Compile Include="Assets\camera.cs" />
