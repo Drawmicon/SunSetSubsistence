@@ -313,7 +313,7 @@ public class EnemyAI : MonoBehaviour
          * timed bool == alternates every minute or so
          */
 
-        if (noticingSomething || ed.enemyState == 1)
+        if (noticingSomething /*|| ed.enemyState == 1*/)
         {
             if (noticingSomething && ebc.contactAlert)//if notice something from enemy body collider, set focus on position and collision object
             {
@@ -326,9 +326,9 @@ public class EnemyAI : MonoBehaviour
             }
         }
 
-        if(ed.enemyState == 2)
+        if(/*ed.enemyState == 2*/false)
         {
-            targetPosition = ed.player.transform.position;
+            /*targetPosition = ed.player.transform.position;*/
             randomLoiterTime = 0f;
         }
 

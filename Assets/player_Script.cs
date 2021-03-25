@@ -47,11 +47,13 @@ public class player_Script : MonoBehaviour
 
     public float difficultyLevel;//multiplier value for how much health is drained during night
 
+    public GameObject[] lsArray;
+
     // Start is called before the first frame update
     void Start()
     {
         /**/
-
+        lsArray = GameObject.FindGameObjectsWithTag("Lantern");
         //**************************
         healthScore = MaxHealthScore;
         solarRegenRate = (MaxHealthScore / 2) / 6.5f;// gives player half of full health extra every day
@@ -103,9 +105,28 @@ public class player_Script : MonoBehaviour
         else { Debug.LogError("Gargoyle Statue Gameobject not set in player_script"); }
     }
 
+    public bool checkLightSources()//check all light sources, if at least one returns that the player is lit, the player is lit, else all false == player unlit
+    {
+        for(int i = 0; i < lsArray.Length; i++)
+        {
+            lightVisibility lv = lsArray[i].GetComponent<lightVisibility>();
+            if (lv.playerInLight)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Update is called once per frame
     void Update()
     {
+        //if night time, then check light sources to see if player is lit
+        if(!dnc.dayTime)
+        {
+            playerLit = checkLightSources();
+        }
+
         //if ground is detected, last grounded position is current position
        if( isGrounded = Physics.CheckSphere(groundChecker.position, groundDistance, groundMask))
         {

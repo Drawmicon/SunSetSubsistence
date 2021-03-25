@@ -125,11 +125,12 @@ public class lightVisibility : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(lightHit, out hit, raymond))
         {
-            if (hit.collider.tag == "Player")
+            if (hit.collider.tag == "Player" || hit.collider.tag == "playerSound" || hit.collider.tag == "Gargoyle" )
             {
                 Debug.Log("Raycast hit object: " + hit.collider.name + "(tag:" + hit.collider.tag + ")");
                 //player.GetComponentInParent<player_Script>().playerLit = true;
-                ps.playerLit = true;
+                //ps.playerLit = true;
+                playerInLight = true;
                 //Call SetColor using the shader property name "_Color" and setting the color to red
                 //playerRenderer.material.SetColor("_Color", Color.red);       
             }
@@ -139,7 +140,8 @@ public class lightVisibility : MonoBehaviour
                 if (dn.dayTime == false)//if player is lit, but daytime, player is not lit by lamp
                 {
                     //player.GetComponentInParent<player_Script>().playerLit = false;
-                    ps.playerLit = false;
+                    //ps.playerLit = false;
+                    playerInLight = false;
                 }
                 //playerRenderer.material.SetColor("_Color", originalColor);
             }
@@ -149,7 +151,8 @@ public class lightVisibility : MonoBehaviour
             if (dn.dayTime == false)
             {
                 //player.GetComponentInParent<player_Script>().playerLit = false;
-                ps.playerLit = false;
+                //ps.playerLit = false;
+                playerInLight = false;
             }
             //playerRenderer.material.SetColor("_Color",originalColor);
 

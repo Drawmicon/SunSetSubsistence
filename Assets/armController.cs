@@ -33,17 +33,17 @@ public class armController : MonoBehaviour
             transform.eulerAngles = originalRotation;
         }
 
-        if(swing && (angle < 360))
+        if(swing && (angle < 360))// from 270 to 0 to 90
         {        
             visible = true;
-            transform.localEulerAngles = new Vector3( 0f, angle, 0f);
+            transform.localEulerAngles = new Vector3(  angle ,0f, 0f);
             angle = angle + speed*Time.deltaTime;
         }
         else
         {
             swing = false;
             visible = false;
-            angle = 0;
+            angle = 180;
         }
     }
     /*
