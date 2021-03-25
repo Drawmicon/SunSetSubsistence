@@ -45,6 +45,8 @@ public class player_Script : MonoBehaviour
     public Collider playerCollider;
     public float waterDamage;
 
+    public float difficultyLevel;//multiplier value for how much health is drained during night
+
     // Start is called before the first frame update
     void Start()
     {
@@ -53,7 +55,7 @@ public class player_Script : MonoBehaviour
         //**************************
         healthScore = MaxHealthScore;
         solarRegenRate = (MaxHealthScore / 2) / 6.5f;// gives player half of full health extra every day
-        lunarDegenRate = (MaxHealthScore * 4) / 300; // removes player health at rate of 3 full lives per night
+        lunarDegenRate = (MaxHealthScore * difficultyLevel) / 300; // removes player health at rate of 3 full lives per night
         //*************************
 
         rubble.SetActive(false);

@@ -34,10 +34,15 @@ public class Start_Menu_Script : MonoBehaviour
     public player_Script ps;
 
     public dayNightCycle_Script dnc;
+
+    public bool lockCursor;
     // Start is called before the first frame update
     void Start()
     {
-        //Cursor.lockState = CursorLockMode.Confined;
+        if (lockCursor)
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+        }
         subOptions = new string[] { "The Reign in Spain Falls Neatly in Distain", "Find Truth, Regardless On How Uncouth ", "Still in a dream, Snake Eater" };
         subtitle.text = subOptions[Random.Range(0, subOptions.Length)];
         stopGameWorld();
@@ -61,6 +66,11 @@ public class Start_Menu_Script : MonoBehaviour
 
         dnc = (GameObject.FindGameObjectWithTag("SunMoonController")).GetComponent<dayNightCycle_Script>();
     }
+
+    public void setDifficulty(int d)
+    {
+        ps.difficultyLevel = d+1;//input value starts at 0
+    }
     
     public void swapCams()
     {
@@ -69,7 +79,10 @@ public class Start_Menu_Script : MonoBehaviour
 
     public void disableUI()
     {
-        //Cursor.lockState = CursorLockMode.Locked;
+        if (lockCursor)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
         previousMode = menu;
         menu = 0;
         startMenu.SetActive(false);
@@ -85,7 +98,10 @@ public class Start_Menu_Script : MonoBehaviour
 
     public void disableUINotHUD()
     {
-        //Cursor.lockState = CursorLockMode.Locked;
+        if (lockCursor)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
         previousMode = menu;
         menu = 0;
         startMenu.SetActive(false);
