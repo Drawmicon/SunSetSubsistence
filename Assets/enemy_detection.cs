@@ -83,6 +83,17 @@ public class enemy_detection : MonoBehaviour
         ps = player.GetComponent<player_Script>();
     }
 
+    public Vector3 findPointInCircle()
+    {
+        Vector3 B = Vector3.ProjectOnPlane(Random.insideUnitSphere, enemyForwardDirection).normalized * coneDetectionRadius;
+
+        return B;
+
+        //https://www.youtube.com/watch?v=UJxgcVaNTqY&ab_channel=KhanAcademy
+        //https://answers.unity.com/questions/1618126/given-a-vector-how-do-i-generate-a-random-perpendi.html
+        //https://math.stackexchange.com/questions/1396824/how-to-get-circle-points-in-3d-given-a-radius-and-a-vector-orthogonal-to-the-cir
+        //https://math.stackexchange.com/questions/1172847/get-circle-around-line-in-3d-plane-where-all-points-of-the-circle-lie-on-the-lin
+    }
 
     private Vector3 randomRadiusPoint(float distance, float maxTheta, float minTheta, Vector3 origin)
     {
@@ -157,12 +168,6 @@ public class enemy_detection : MonoBehaviour
     //*********************************************************
     //*********************************************************
     //*********************************************************
-    Vector3 viewFocusVector()
-    {
-
-        //
-        return enemyForwardDirection;
-    }
     //*********************************************************
     //*********************************************************
     //*********************************************************
@@ -294,10 +299,10 @@ public class enemy_detection : MonoBehaviour
                     //enemyViewPoint = (this.transform.parent.forward - transform.position).normalized * distance;
                     //choose random point in unit cirle OR choose random distance and angle (within limits) to get new position in relation to forwards vector
                     //enemyViewPoint = randomRadiusPoint(distance, coneDetectionRadius, 1, enemyFront.transform.position);
-                    enemyViewPoint = rotateVector(enemyForwardDirection, Random.Range(0f, coneDetectionRadius), Random.Range(0f, coneDetectionRadius), Random.Range(0f, coneDetectionRadius));
+                    //enemyViewPoint = rotateVector(enemyForwardDirection, Random.Range(0f, coneDetectionRadius), Random.Range(0f, coneDetectionRadius), Random.Range(0f, coneDetectionRadius));
                     //enemyViewPoint = RandomPointInCircle(this.transform.parent.transform.forward*distance, coneDetectionRadius, Random.Range(0, coneDetectionRadius));
                     //In different script, move enemy view object to location in circle in front of vector.forward of enemy
-
+                    enemyViewPoint = findPointInCircle();
                     /*
                      
                      !!!!!!!!

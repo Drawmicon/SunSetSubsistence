@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour
 {
-    public enemyBodyCollider ebc;
+    //public enemyBodyCollider ebc;
     public dayNightCycle_Script dnc;
     public float enemyHealth, maxEnemyHealth;
 
@@ -44,12 +44,17 @@ public class EnemyAI : MonoBehaviour
 
     public bool here;//on when enemy is at destination, off when traversing
 
-    public enemy_detection ed;
+    //public enemy_detection ed;
+    public triggerDetection td;
+    public player_Script ps;
 
     private void Start()
     {
-        ebc = GetComponent<enemyBodyCollider>();
-
+        ps = GameObject.FindGameObjectWithTag("Player").GetComponent<player_Script>();
+        if (td == null)
+        {
+            td = GetComponentInChildren<triggerDetection>();
+        }
         enemyHealth = maxEnemyHealth;
         noticingSomething = false;
         detectionLeftRight = false;
@@ -64,7 +69,6 @@ public class EnemyAI : MonoBehaviour
         {
             ed = GetComponentInChildren<enemy_detection>();
         }*/
-        noticingSomething = false;
         speed = Random.Range(minSpeed, maxSpeed);
         randomLoiterTime = Random.Range(minLoiterTime, maxLoiterTime);
         //fullLoiterTime = randomLoiterTime;
@@ -252,16 +256,24 @@ public class EnemyAI : MonoBehaviour
         //move and rotate to that spot
     }
 
+    private Vector3 RandomDirection(float min, float max)
+    {
+        var x = Random.Range(min, max);
+        var y = Random.Range(min, max);
+        var z = this.transform.position.z;
+        return new Vector3(x, y, z);
+    }
+
     private void Update()
     {
-        if(ebc.contactAlert)
+        /*if(ebc.contactAlert)
         {
             noticingSomething = true;
         }
         else
         {
             noticingSomething = false;
-        }
+        }*/
         //********************************************************************************
         //*************************object avoidance************************************** arduino cars
         //********************************************************************************
@@ -313,63 +325,64 @@ public class EnemyAI : MonoBehaviour
          * timed bool == alternates every minute or so
          */
 
-        if (noticingSomething /*|| ed.enemyState == 1*/)
+        /* if(td.playerAlertDetected == false && td.playerSusDetected == false)
+         {
+             randomLoiterTime = 0f;
+         }*/
+
+        if (td.alertTimer > 0f)// if in alert mode
         {
-            if (noticingSomething && ebc.contactAlert)//if notice something from enemy body collider, set focus on position and collision object
+            if (td.playerAlertDetected)//if seeing player
             {
-                targetPosition = ebc.alertPosition;
-                lookAtTarget = ebc.alertTarget;
+                agent.SetDestination(player.transform.position);
             }
-            else
+            else// if not seeing player
             {
-                targetPosition = this.transform.position;
-            }
-        }
-
-        if(/*ed.enemyState == 2*/false)
-        {
-            /*targetPosition = ed.player.transform.position;*/
-            randomLoiterTime = 0f;
-        }
-
-        if ((targetPosition - transform.position).magnitude <= nearEnoughToTarget || here)//if enemy is at destination
-        {
-            if (randomLoiterTime > 0f)//if not done loitering, just stay at position and count down
-            {
-                randomLoiterTime -= Time.deltaTime * 1f;//countdown while waiting
-                here = true;
-
-                //objectAvoidance();
-                agent.isStopped = true;
                 
-                if (noticingSomething)//if enemy notices something, face that object
-                {
-                    facing();
-                }
-                else//else avoid facing non-tagged objects
-                {
-                    objectAvoidance();
-                    back2Wall();
-                }
-            }
-            else//if done loitering, moving to another spot
-            {
-                agent.isStopped = false;
-                //move to spot, if not detecting anything interesting
-                if (positions2Move2.Length > 0)//if positions to move to exist
-                {
-                    position2Move2Backup = Random.Range(0, positions2Move2.Length);
-                    targetPosition = positions2Move2[position2Move2Backup].transform.position;//pick position
-                    randomLoiterTime = Random.Range(minLoiterTime, maxLoiterTime);//set random loiter time
-                    here = false;//no longer here
-
-                }
             }
         }
         else
         {
-            //targetPosition = new Vector3(targetPosition.x, Terrain.activeTerrain.SampleHeight(transform.position), targetPosition.z);
-            agent.SetDestination(targetPosition);
+            if ((targetPosition - transform.position).magnitude <= nearEnoughToTarget || here)//if enemy is at destination
+            {
+                if (randomLoiterTime > 0f)//if not done loitering, just stay at position and count down
+                {
+                    randomLoiterTime -= Time.deltaTime * 1f;//countdown while waiting
+                    here = true;
+
+                    //objectAvoidance();
+                    if (agent.isStopped == false)
+                    {
+                        agent.isStopped = true;
+                    }
+                    if (noticingSomething)//if enemy notices something, face that object
+                    {
+                        facing();
+                    }
+                    else//else avoid facing non-tagged objects
+                    {
+                        objectAvoidance();
+                        back2Wall();
+                    }
+                }
+                else//if done loitering, moving to another spot
+                {
+                    agent.isStopped = false;
+                    //move to spot, if not detecting anything interesting
+                    if (positions2Move2.Length > 0)//if positions to move to exist
+                    {
+                        position2Move2Backup = Random.Range(0, positions2Move2.Length);
+                        targetPosition = positions2Move2[position2Move2Backup].transform.position;//pick position
+                        randomLoiterTime = Random.Range(minLoiterTime, maxLoiterTime);//set random loiter time
+                        here = false;//no longer here
+
+                    }
+                }
+            }
+            else
+            {
+                agent.SetDestination(targetPosition);
+            }
         }
 
         //if timer not done, run timer, continue loitering
@@ -378,23 +391,6 @@ public class EnemyAI : MonoBehaviour
         //if not loitering
         //if enemy is greater than x distance from target position, move closer, else dont
     }
-    /*
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.transform.name == "Player")
-        {
-            Debug.Log("Player_Found!");
-            //set view target as collision object
-        }
-
-        if (collision.transform.name != null || collision.transform.name != "Untagged")
-        {
-            noticingSomething = true;
-            lookAtTarget = collision.gameObject;
-            //set view target as collision object
-        }
-    }
-    */
 
     private void OnDestroy()//make alert collider bigger to alert nearby enemies
     {

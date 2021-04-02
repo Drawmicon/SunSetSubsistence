@@ -5,6 +5,12 @@ using UnityEngine.UI;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
+/*
+    START MENU FUNCTIONALITY:
+ 
+    A series of game objects encapsulate all parts of each menu screen, and are activated when the menu is called.
+ 
+ */
 public class Start_Menu_Script : MonoBehaviour
 {
     public AudioMixer musisk;
@@ -43,7 +49,7 @@ public class Start_Menu_Script : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.Confined;
         }
-        subOptions = new string[] { "The Reign in Spain Falls Neatly in Distain", "Eat or be beaten", "Still in a dream, Snake Eater" };
+        subOptions = new string[] { "The Reign in Spain Falls Neatly in Distain", "Eat or be beaten", "Still in a dream, Snake Eater", "I am not throwing away my shot!" };
         subtitle.text = subOptions[Random.Range(0, subOptions.Length)];
         stopGameWorld();
         startMenu.SetActive(true);

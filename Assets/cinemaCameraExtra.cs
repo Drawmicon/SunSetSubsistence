@@ -6,7 +6,7 @@ public class cinemaCameraExtra : MonoBehaviour
 {
     public GameObject parentObject;
     public GameObject positionObject;
-    public bool moveTowardsPosition;
+    public bool moveTowardsPosition;// activate to move cinematic cam to active position
     public float speed;
     public bool atCinemaPosition;
     public bool atParentPosition;

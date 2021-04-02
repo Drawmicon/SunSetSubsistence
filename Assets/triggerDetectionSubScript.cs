@@ -6,16 +6,51 @@ using UnityEngine;
 public class triggerDetectionSubScript : MonoBehaviour
 {
     public GameObject player;
+    public Vector3 enemy2Player;
+    public float distance, width;
+    public bool inCollider;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        inCollider = false;
+        player = GameObject.FindGameObjectWithTag("Player");
+        distance = GetComponent<CapsuleCollider>().height;
+        width = GetComponent<CapsuleCollider>().radius;
     }
 
     // Update is called once per frame
     void Update()
     {
-        //if raycast to player is true
-        //if player is in trigger collider
+        
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            inCollider = true;
+        }
+        //Debug.Log("Object has entered trigger collider: " + other.name+ " (tag:"+other.tag+")");
+        /*
+        if(other.tag == "Enemy") //if enemy notices other enemy
+        {
+
+        }*/
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            inCollider = false;
+        }
+        //Debug.Log("Object has exited trigger collider: " + other.name + " (tag:" + other.tag + ")");
+
+        /*
+        if(other.tag == "Enemy") //if enemy notices other enemy
+        {
+
+        }*/
     }
 }
