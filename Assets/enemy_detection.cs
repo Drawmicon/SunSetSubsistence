@@ -243,7 +243,7 @@ public class enemy_detection : MonoBehaviour
         enemyLookingHere = enemyLookAtTargetObject.transform.position - this.transform.position;//white draw ray
         enemyFacingDirection = (enemyViewPoint - this.transform.position).normalized * distance;
         enemy2playerVec = (player.transform.position - this.transform.position);
-        enemyForwardDirection = eai.forwardDetector;
+        if (eai != null) { enemyForwardDirection = eai.forwardDetector; }
 
         //light2playerVec = targetPoint - initialPoint;
         Debug.DrawRay(this.transform.position, enemy2playerVec * distance, Color.green);//from enemy to player

@@ -23,11 +23,13 @@ public class triggerDetection : MonoBehaviour
     public float susTimer, maxSusTimer, alertTimer, maxAlertTimer, susLookAtTimer, maxSusLookAtTimer;//current times on modes, and max times
 
     public EnemyAI eai;
+    public enemyTextController etc;
+    public enemyBodyCollider ebc;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        ebc = GetComponentInParent<enemyBodyCollider>();
         alertTimer = 0;
         susTimer = 0;
         if (outer != null && outer.width > 0)
@@ -37,26 +39,77 @@ public class triggerDetection : MonoBehaviour
         //enemyRen = enemyBody.GetComponent<Renderer>();
         enemyRen = GetComponentInParent<Renderer>();
         original = enemyRen.material.color;
+        etc = GetComponentInChildren<enemyTextController>();
     }
 
     //Check around area if player is not detected, but still in sus/alert mode
+    public void randomLookAround()
+    {
+
+    }
 
     // Update is called once per frame
     void Update()
     {
+        float enemyHealth=ebc.enemyHealth;
+        float maxEnemyHealth=ebc.maxEnemyHealth;
+        /*float enemyHealth, maxEnemyHealth;
+        if(eai != null)
+        {
+            enemyHealth= eai.enemyHealth;
+            maxEnemyHealth=eai.maxEnemyHealth;
+        }
+        else
+        {
+            enemyHealth = 100;
+            maxEnemyHealth = 100;
+        }*/
+
+        if (playerAlertDetected)
+        {
+            etc.textOutput = "!!!\n" + etc.names[etc.nameChoice] + "(" + enemyHealth + "/" + maxEnemyHealth + ")";
+        }
+        else
+        {
+            if (alertMode)
+            {
+                etc.textOutput = "!\n" + etc.names[etc.nameChoice] + "(" + enemyHealth + "/" + maxEnemyHealth + ")";
+            }
+            else
+            {
+                if (playerSusDetected)
+                {
+                    etc.textOutput = "???\n" + etc.names[etc.nameChoice] + "(" + enemyHealth + "/" + maxEnemyHealth + ")";
+                }
+                else
+                {
+                    if (susMode)
+                    {
+                        etc.textOutput = "?\n" + etc.names[etc.nameChoice] + "(" + enemyHealth + "/" + maxEnemyHealth + ")";
+                    }
+                    else
+                    {
+                        etc.textOutput = "\n" + etc.names[etc.nameChoice] + "(" + enemyHealth + "/" + maxEnemyHealth + ")";
+                    }
+                }
+            }
+        }
 
         if (playerAlertDetected)
         {
             enemyRen.material.SetColor("_Color", Color.red);
-            player = eai.lookAtTarget;
-            eai.noticingSomething = true;
+            if (eai != null){player = eai.lookAtTarget;
+            eai.noticingSomething = true; }
         }
         else
         {
             if (playerSusDetected)
             {
-                player = eai.lookAtTarget;
-                eai.noticingSomething = true;
+                if (eai != null)
+                {
+                    player = eai.lookAtTarget;
+                    eai.noticingSomething = true;
+                }
 
                 enemyRen.material.SetColor("_Color", Color.yellow);
                 if (susLookAtTimer <= 0)//look at player if they stay in sus area for half of max sus time
@@ -70,7 +123,6 @@ public class triggerDetection : MonoBehaviour
             }
         }
         
-
         //check if player is in collider
         inInnerCollider = inner.inCollider;
         inOuterCollider = outer.inCollider;
@@ -92,7 +144,7 @@ public class triggerDetection : MonoBehaviour
             {
                 if (inInnerCollider)//if player detected in inner collider and outer collider
                 {
-                    playerAlertDetected = true;
+                    playerAlertDetected = true;//player alert is on, enemy looks at player, start timers
                     
                     this.transform.LookAt(player.transform);
                     alertTimer = maxAlertTimer;
@@ -101,31 +153,44 @@ public class triggerDetection : MonoBehaviour
                 else//if player is only detected in outer collider
                 {
                     playerSusDetected = true;
-                    susTimer = maxSusTimer;
+                   /* susTimer = maxSusTimer;
                     if (susLookAtTimer <= 0)
                     {                      
                         susLookAtTimer = maxSusLookAtTimer;
                     }
+                    else
+                    {
+                        susLookAtTimer -= Time.deltaTime;
+                    }*/
                 }
             }
             else//if not detected, normal mode
             {
+                playerAlertDetected = false;
+                playerSusDetected = false;
+
                 //if alert or suspicious mode timers are done, return to normal
                 if (alertTimer <= 0)// if alert timer is done, turn off alert bool
                 {
-                    playerAlertDetected = false;
+                    alertMode = false;
+
+                    randomLookAround();
+                    
                     if (susTimer <= 0)// if sus timer is done, turn off sus bool and look forward
                     {
-                        playerSusDetected = false;
+                        susMode = false;
+                        
                         this.transform.rotation = this.transform.parent.rotation;
                     }
                     else//if sus timer not done, countdown
                     {
+                        susMode = true;
                         susTimer -= Time.deltaTime;
                     }
                 }
                 else//if alert timer not done, countdown
                 {
+                    alertMode = true;
                     alertTimer -= Time.deltaTime;
                 }           
             }

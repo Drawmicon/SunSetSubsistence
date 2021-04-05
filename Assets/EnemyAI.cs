@@ -47,7 +47,7 @@ public class EnemyAI : MonoBehaviour
     //public enemy_detection ed;
     public triggerDetection td;
     public player_Script ps;
-
+    public GameObject grave;
     private void Start()
     {
         ps = GameObject.FindGameObjectWithTag("Player").GetComponent<player_Script>();
@@ -290,46 +290,31 @@ public class EnemyAI : MonoBehaviour
         //objectAvoidance();
         drawLines();
 
+        //destroy enemy if enemy health is 0
         if (enemyHealth == 0f)
-        {
+        {          
             //stop all movement
+            agent.isStopped = true;
+            Vector3 pos = this.transform.position;
+            Quaternion rot = this.transform.rotation;
 
-            if (dnc.dayTime)//if enemy health is 0 and its daytime, destroy enemy
-            {
+            //if (dnc.dayTime)//if enemy health is 0 and its daytime, destroy enemy
+            //{             
                 //destroy enemy, spawn grave
-            }
+                Destroy(this);
+                if(grave !=  null)
+                {
+                    Instantiate(grave, pos, rot);
+                }
+            //}
         }
 
         //********************************************************************************
         //*************************object avoidance**************************************
         //********************************************************************************
 
-        /* if ((targetPosition - this.transform.position).magnitude <= nearEnoughToTarget)//if distance between target and enemy is close enough
-         {
-             targetPosition = positions2Move2[Random.Range(0, positions2Move2.Length - 1)].transform.position;
-         }
-         else
-         {
-             agent.SetDestination(targetPosition);
-
-         }*/
-
-        //leftDetector = Quaternion.Euler(0, detectionAngle, 0) * forwardDetector;
-        //rightDetector = Quaternion.Euler(0, -detectionAngle, 0) * forwardDetector;
-        /*if not loitering, aka if walking to position
-         * if left ray cast detects object, stop and turn enemy right
-         * vice versa
-         * 
-         * if both, then turn left or right based on timed bool variable
-         * 
-         * timed bool == alternates every minute or so
-         */
-
-        /* if(td.playerAlertDetected == false && td.playerSusDetected == false)
-         {
-             randomLoiterTime = 0f;
-         }*/
-
+        //NORMAL BEHAVIOR>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        /*
         if (td.alertTimer > 0f)// if in alert mode
         {
             if (td.playerAlertDetected)//if seeing player
@@ -384,6 +369,7 @@ public class EnemyAI : MonoBehaviour
                 agent.SetDestination(targetPosition);
             }
         }
+        */
 
         //if timer not done, run timer, continue loitering
         //else if at target, choose new target position

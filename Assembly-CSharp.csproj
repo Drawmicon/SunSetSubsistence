@@ -113,6 +113,7 @@
     <Compile Include="Assets\detection.cs" />
     <Compile Include="Assets\enemyBodyCollider.cs" />
     <Compile Include="Assets\enemyDestinationScript.cs" />
+    <Compile Include="Assets\enemyTextController.cs" />
     <Compile Include="Assets\enemyViewTarget.cs" />
     <Compile Include="Assets\enemy_detect.cs" />
     <Compile Include="Assets\enemy_detection.cs" />

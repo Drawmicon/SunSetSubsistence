@@ -29,7 +29,7 @@ public class player_Script : MonoBehaviour
     public Vector3 step1, step2;
     public float stepCounter,stepCounterMax;
 
-    public bool detected;
+    public bool detected, alertDetected;//detected == not visibly seen, alert detected == visibly seen
     public float stepTimer, maxStepTimer;
     public Vector3 position1, position2, lastDetectedDirection;
 
@@ -49,11 +49,15 @@ public class player_Script : MonoBehaviour
 
     public GameObject[] lsArray;
 
+    public GameObject[] enemies;
+
     // Start is called before the first frame update
     void Start()
     {
-        /**/
-        lsArray = GameObject.FindGameObjectsWithTag("Lantern");
+        enemies = GameObject.FindGameObjectsWithTag("EnemyHead");
+
+            /**/
+            lsArray = GameObject.FindGameObjectsWithTag("Lantern");
         //**************************
         healthScore = MaxHealthScore;
         solarRegenRate = (MaxHealthScore / 2) / 6.5f;// gives player half of full health extra every day
@@ -118,9 +122,51 @@ public class player_Script : MonoBehaviour
         return false;
     }
 
+    public bool checkEnemySuspicion()//check all enemies, if at least one returns that the player is detected, the player is detected, else all false
+    {
+        foreach (GameObject enemy in enemies)
+        {
+            if (enemy.GetComponent<triggerDetection>().playerSusDetected)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool checkEnemyAlert()//check all enemies, if at least one returns that the player is detected, the player is detected, else all false
+    {
+        foreach(GameObject enemy in enemies)
+        {
+            if (enemy.GetComponent<triggerDetection>().playerAlertDetected)
+            {
+                return true;
+            }
+        }
+        /*for (int i = 0; i < lsArray.Length; i++)
+        {
+            triggerDetection lv = enemies[i].GetComponent<triggerDetection>();
+            if (lv.playerAlertDetected)
+            {
+                return true;
+            }
+        }*/
+        return false;
+    }
+
     // Update is called once per frame
     void Update()
     {
+        alertDetected= checkEnemyAlert();
+        if (alertDetected)//if already alert detected, set sus detected to false
+        {
+            detected = false;
+        }
+        else
+        {
+            detected = checkEnemySuspicion();
+        }
+
         //if night time, then check light sources to see if player is lit
         if(!dnc.dayTime)
         {

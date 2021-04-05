@@ -15,18 +15,14 @@ public class attackScript : MonoBehaviour
     {
         
     }
-    /*
-    private void OnTriggerEnter(Collider collision)
+    
+    /*private void OnTriggerEnter(Collider collision)
     {
-        if (collision.gameObject.tag != "Rock")
+        if (collision.gameObject.tag == "Enemy")
         {
             //add damage to enemy
             Debug.Log("Player attacked gameobject:" + collision.gameObject.name + "(tag:" + collision.gameObject.tag + ")");
             Destroy(collision.gameObject);
-        }
-        else
-        {
-            Debug.Log("Player attacked gameobject:" + collision.gameObject.name + "(tag:" + collision.gameObject.tag + ")");
         }
     }
     */

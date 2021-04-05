@@ -321,31 +321,46 @@ public class Start_Menu_Script : MonoBehaviour
             }
         }
 
-        //health Icon images == 0:safe, 1:detected, 2:lit up, 3: low health, 4:lowHealth&detected
-        if (ps.healthScore < ps.MaxHealthScore / 3)//low health and detected
+        //health Icon images == 0:safe, 1:detected, 2:lit up, 3: low health, 4:lowHealth&detected, 5: visibly detected&low health, 6: visibly detected
+        if (ps.alertDetected && ps.healthScore < ps.MaxHealthScore / 3)
         {
-            healthIcon.sprite = healthIconImages[4];
+            healthIcon.sprite = healthIconImages[5];
         }
-        else { 
-            if (ps.healthScore < ps.MaxHealthScore / 3)//low health
+        else
+        {
+            if (ps.alertDetected)
             {
-                healthIcon.sprite = healthIconImages[3];
+                healthIcon.sprite = healthIconImages[6];
             }
             else
             {
-                if (ps.detected)//detected
+                if (ps.healthScore < ps.MaxHealthScore / 4 && ps.detected)//low health and detected
                 {
-                    healthIcon.sprite = healthIconImages[1];
+                    healthIcon.sprite = healthIconImages[4];
                 }
                 else
                 {
-                    if (ps.playerLit)//lit up
+                    if (ps.detected)//detected
                     {
-                        healthIcon.sprite = healthIconImages[2];
+                        healthIcon.sprite = healthIconImages[1];
                     }
                     else
                     {
-                        healthIcon.sprite = healthIconImages[0];//normal mode
+                        if (ps.healthScore < ps.MaxHealthScore / 3)//low health
+                        {
+                            healthIcon.sprite = healthIconImages[3];
+                        }
+                        else
+                        {
+                            if (ps.playerLit)//lit up
+                            {
+                                healthIcon.sprite = healthIconImages[2];
+                            }
+                            else
+                            {
+                                healthIcon.sprite = healthIconImages[0];//normal mode
+                            }
+                        }
                     }
                 }
             }
