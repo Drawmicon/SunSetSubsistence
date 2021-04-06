@@ -50,8 +50,11 @@ public class EnemyAI : MonoBehaviour
     public GameObject grave;
     public enemyBodyCollider ebc;
 
+    public LayerMask ignorePlayer;
+
     private void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player");
         ebc = GetComponentInChildren<enemyBodyCollider>();
         maxEnemyHealth = ebc.maxEnemyHealth;
         ps = GameObject.FindGameObjectWithTag("Player").GetComponent<player_Script>();
@@ -112,7 +115,7 @@ public class EnemyAI : MonoBehaviour
         RaycastHit hit2;
 
         //turn away if there is an object in front
-        if (Physics.Raycast(lightHit, out hit, detectionDistance) && Physics.Raycast(lightHit2, out hit2, detectionDistance))//ERROR: enemy might not be able to see player if its own body is blocking
+        if (Physics.Raycast(lightHit, out hit, detectionDistance, ~ignorePlayer) && Physics.Raycast(lightHit2, out hit2, detectionDistance, ~ignorePlayer))//ERROR: enemy might not be able to see player if its own body is blocking
         {           
             if (hit.collider.tag != "Player" || hit.collider.tag != "Player_Controller")//if left detected
             {
@@ -148,7 +151,7 @@ public class EnemyAI : MonoBehaviour
         else
         {
             //if not blocking view from both raycasts, check individually
-            if (Physics.Raycast(lightHit, out hit, detectionDistance))//ERROR: enemy might not be able to see player if its own body is blocking
+            if (Physics.Raycast(lightHit, out hit, detectionDistance, ~ignorePlayer))//ERROR: enemy might not be able to see player if its own body is blocking
             {
                 detectionLeftRight = true;
                 if (hit.collider.tag != "Player" || hit.collider.tag != "Player_Controller")
@@ -159,7 +162,7 @@ public class EnemyAI : MonoBehaviour
             }
             else
             {                
-                if (Physics.Raycast(lightHit2, out hit2, detectionDistance))
+                if (Physics.Raycast(lightHit2, out hit2, detectionDistance, ~ignorePlayer))
                 {
                     detectionLeftRight = true;
                     if (hit2.collider.tag != "Player" || hit2.collider.tag != "Player_Controller")
@@ -187,7 +190,7 @@ public class EnemyAI : MonoBehaviour
 
         if (detectionLeftRight == false)
         {
-            if (Physics.Raycast(lightHit3, out hit3, detectionDistance2) && Physics.Raycast(lightHit4, out hit4, detectionDistance2))//ERROR: enemy might not be able to see player if its own body is blocking
+            if (Physics.Raycast(lightHit3, out hit3, detectionDistance2, ~ignorePlayer) && Physics.Raycast(lightHit4, out hit4, detectionDistance2, ~ignorePlayer))//ERROR: enemy might not be able to see player if its own body is blocking
             {
                 if (hit3.collider.tag != "Player" || hit3.collider.tag != "Player_Controller")//if left detected
                 {
@@ -219,7 +222,7 @@ public class EnemyAI : MonoBehaviour
             else
             {
                 //if not blocking view from both raycasts, check individually
-                if (Physics.Raycast(lightHit3, out hit3, detectionDistance2))//ERROR: enemy might not be able to see player if its own body is blocking
+                if (Physics.Raycast(lightHit3, out hit3, detectionDistance2, ~ignorePlayer))//ERROR: enemy might not be able to see player if its own body is blocking
                 {
                     if (hit3.collider.tag != "Player" || hit3.collider.tag != "Player_Controller")
                     {
@@ -229,7 +232,7 @@ public class EnemyAI : MonoBehaviour
                 }
                 else
                 {
-                    if (Physics.Raycast(lightHit4, out hit4, detectionDistance2))
+                    if (Physics.Raycast(lightHit4, out hit4, detectionDistance2, ~ignorePlayer))
                     {
                         if (hit4.collider.tag != "Player" || hit4.collider.tag != "Player_Controller")
                         {
@@ -253,9 +256,10 @@ public class EnemyAI : MonoBehaviour
         }*/
     }
 
-    void randomRotate()
+    public Vector3 randomRotate()
     {
-        //this.transform.Rotate
+        Vector3 randomRotate = new Vector3(Random.insideUnitCircle.x*5 + this.transform.position.x, transform.position.y, Random.insideUnitCircle.y*5 + this.transform.position.z);
+        return randomRotate;
     }
 
     void search()
@@ -327,52 +331,64 @@ public class EnemyAI : MonoBehaviour
         //NORMAL BEHAVIOR>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         if (td.playerAlertDetected)
         {
-            agent.SetDestination(player.transform.position);
+            if (agent.destination != player.transform.position)
+            {
+                agent.SetDestination(player.transform.position);
+            }
             this.transform.LookAt(player.transform);
         }
         else
         {
-            if ((targetPosition - transform.position).magnitude <= nearEnoughToTarget || here)//if enemy is at destination
-            {
-                if (randomLoiterTime > 0f)//if not done loitering, just stay at position and count down
-                {
-                    randomLoiterTime -= Time.deltaTime * 1f;//countdown while waiting
-                    here = true;
 
-                    //objectAvoidance();
-                    if (agent.isStopped == false)
+                if ((targetPosition - transform.position).magnitude <= nearEnoughToTarget || here)//if enemy is at destination
+                {
+                    if (randomLoiterTime > 0f)//if not done loitering, just stay at position and count down
                     {
-                        agent.isStopped = true;
+                        randomLoiterTime -= Time.deltaTime * 1f;//countdown while waiting
+                        here = true;
+
+                        //objectAvoidance();
+                        if (agent.isStopped == false)
+                        {
+                            agent.isStopped = true;
+                        }
+                        if (noticingSomething)//if enemy notices something, face that object
+                        {
+                            facing();
+                        }
+                        else//else avoid facing non-tagged objects
+                        {
+                            objectAvoidance();
+                            back2Wall();
+                        }
                     }
-                    if (noticingSomething)//if enemy notices something, face that object
+                    else//if done loitering, moving to another spot
                     {
-                        facing();
-                    }
-                    else//else avoid facing non-tagged objects
-                    {
-                        objectAvoidance();
-                        back2Wall();
+                        agent.isStopped = false;
+                        //move to spot, if not detecting anything interesting
+                        if (positions2Move2.Length > 0)//if positions to move to exist
+                        {
+                            position2Move2Backup = Random.Range(0, positions2Move2.Length);
+                            if (td.alertMode)
+                            {
+                            targetPosition = randomRotate();
+                            }
+                            else
+                            {
+                                targetPosition = positions2Move2[position2Move2Backup].transform.position;//pick position
+                            }
+                            randomLoiterTime = Random.Range(minLoiterTime, maxLoiterTime);//set random loiter time
+                            here = false;//no longer here
+
+                        }
                     }
                 }
-                else//if done loitering, moving to another spot
+                else
                 {
-                    agent.isStopped = false;
-                    //move to spot, if not detecting anything interesting
-                    if (positions2Move2.Length > 0)//if positions to move to exist
-                    {
-                        position2Move2Backup = Random.Range(0, positions2Move2.Length);
-                        targetPosition = positions2Move2[position2Move2Backup].transform.position;//pick position
-                        randomLoiterTime = Random.Range(minLoiterTime, maxLoiterTime);//set random loiter time
-                        here = false;//no longer here
-
-                    }
+                    agent.SetDestination(targetPosition);
                 }
             }
-            else
-            {
-                agent.SetDestination(targetPosition);
-            }
-        }
+        
        
         
 
