@@ -26,6 +26,8 @@ public class triggerDetection : MonoBehaviour
     public enemyTextController etc;
     public enemyBodyCollider ebc;
 
+    public player_Script ps;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -40,6 +42,8 @@ public class triggerDetection : MonoBehaviour
         enemyRen = GetComponentInParent<Renderer>();
         original = enemyRen.material.color;
         etc = GetComponentInChildren<enemyTextController>();
+
+        ps = player.GetComponent<player_Script>();
     }
 
     //Check around area if player is not detected, but still in sus/alert mode
@@ -142,26 +146,33 @@ public class triggerDetection : MonoBehaviour
         {
             if ((hit.collider.tag == "Player") && inOuterCollider && Vector3.Angle(enemy2Player, forwardParentVector) <= detectionRadius)//if player detected in outer collider
             {
-                if (inInnerCollider)//if player detected in inner collider and outer collider
+
+                if (ps.playerLit)//check if player is lit up
                 {
-                    playerAlertDetected = true;//player alert is on, enemy looks at player, start timers
-                    
-                    this.transform.LookAt(player.transform);
-                    alertTimer = maxAlertTimer;
-                    susTimer = maxSusTimer;
-                }
-                else//if player is only detected in outer collider
-                {
-                    playerSusDetected = true;
-                   /* susTimer = maxSusTimer;
-                    if (susLookAtTimer <= 0)
-                    {                      
-                        susLookAtTimer = maxSusLookAtTimer;
-                    }
-                    else
+                    if (inInnerCollider)//if player detected in inner collider and outer collider
                     {
-                        susLookAtTimer -= Time.deltaTime;
-                    }*/
+                        playerAlertDetected = true;//player alert is on, enemy looks at player, start timers
+                        alertMode = true;
+
+                        this.transform.LookAt(player.transform);
+                        alertTimer = maxAlertTimer;
+                        susTimer = maxSusTimer;
+                    }
+                    else//if player is only detected in outer collider
+                    {
+                        playerSusDetected = true;
+                        susMode = true;
+                        susTimer = maxSusTimer;
+                        /* susTimer = maxSusTimer;
+                         if (susLookAtTimer <= 0)
+                         {                      
+                             susLookAtTimer = maxSusLookAtTimer;
+                         }
+                         else
+                         {
+                             susLookAtTimer -= Time.deltaTime;
+                         }*/
+                    }
                 }
             }
             else//if not detected, normal mode

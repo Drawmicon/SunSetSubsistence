@@ -61,7 +61,6 @@ public class enemyBodyCollider : MonoBehaviour
         }
     }
 
-    
     private void OnCollisionEnter(Collision collision)
     {//if collision of enemy, misc-object or player body/sound, alert enemy
         if(collision.gameObject.tag == "playerAttack" /*|| collision.gameObject.tag == "Player" || collision.gameObject.tag == "PlayerBodyCollider" || collision.gameObject.tag == "PlayerSoundCollider"*/  ||collision.gameObject.tag == "misc")

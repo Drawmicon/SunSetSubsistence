@@ -26,6 +26,8 @@ public class lightVisibility : MonoBehaviour
 
     public player_Script ps;
 
+    public LayerMask ignoreLayer;
+
         // Start is called before the first frame update
     void Start()
     {
@@ -123,9 +125,9 @@ public class lightVisibility : MonoBehaviour
         // Declare a raycast hit to store information about what our raycast has hit
         Ray lightHit = new Ray(this.transform.position, light2playerVec);
         RaycastHit hit;
-        if (Physics.Raycast(lightHit, out hit, raymond))
+        if (Physics.Raycast(lightHit, out hit, raymond, ~ignoreLayer))
         {
-            if (hit.collider.tag == "Player" || hit.collider.tag == "playerSound" || hit.collider.tag == "Gargoyle" )
+            if (hit.collider.tag == "Player" /*|| hit.collider.tag == "playerSound" */|| hit.collider.tag == "Gargoyle" )
             {
                 Debug.Log("Raycast hit object: " + hit.collider.name + "(tag:" + hit.collider.tag + ")");
                 //player.GetComponentInParent<player_Script>().playerLit = true;

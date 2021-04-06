@@ -48,8 +48,12 @@ public class EnemyAI : MonoBehaviour
     public triggerDetection td;
     public player_Script ps;
     public GameObject grave;
+    public enemyBodyCollider ebc;
+
     private void Start()
     {
+        ebc = GetComponentInChildren<enemyBodyCollider>();
+        maxEnemyHealth = ebc.maxEnemyHealth;
         ps = GameObject.FindGameObjectWithTag("Player").GetComponent<player_Script>();
         if (td == null)
         {
@@ -249,10 +253,15 @@ public class EnemyAI : MonoBehaviour
         }*/
     }
 
+    void randomRotate()
+    {
+        //this.transform.Rotate
+    }
+
     void search()
     {
         //choose random direction + last detected direction vector
-        
+        agent.SetDestination(this.transform.position + ps.lastDetectedDirection.normalized * Random.Range(1,10));
         //move and rotate to that spot
     }
 
@@ -266,6 +275,8 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
+
+        enemyHealth = ebc.enemyHealth;
         /*if(ebc.contactAlert)
         {
             noticingSomething = true;
@@ -291,13 +302,13 @@ public class EnemyAI : MonoBehaviour
         drawLines();
 
         //destroy enemy if enemy health is 0
-        if (enemyHealth == 0f)
+        if (enemyHealth <= 0f)
         {          
             //stop all movement
             agent.isStopped = true;
             Vector3 pos = this.transform.position;
             Quaternion rot = this.transform.rotation;
-
+            pos.y -= 2;
             //if (dnc.dayTime)//if enemy health is 0 and its daytime, destroy enemy
             //{             
                 //destroy enemy, spawn grave
@@ -314,17 +325,10 @@ public class EnemyAI : MonoBehaviour
         //********************************************************************************
 
         //NORMAL BEHAVIOR>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        /*
-        if (td.alertTimer > 0f)// if in alert mode
+        if (td.playerAlertDetected)
         {
-            if (td.playerAlertDetected)//if seeing player
-            {
-                agent.SetDestination(player.transform.position);
-            }
-            else// if not seeing player
-            {
-                
-            }
+            agent.SetDestination(player.transform.position);
+            this.transform.LookAt(player.transform);
         }
         else
         {
@@ -369,7 +373,8 @@ public class EnemyAI : MonoBehaviour
                 agent.SetDestination(targetPosition);
             }
         }
-        */
+       
+        
 
         //if timer not done, run timer, continue loitering
         //else if at target, choose new target position

@@ -42,6 +42,9 @@ public class Start_Menu_Script : MonoBehaviour
     public dayNightCycle_Script dnc;
 
     public bool lockCursor;
+
+    public Slider healthSlider;
+    public Color sliderHealthDefault, sliderFullHealth;
     // Start is called before the first frame update
     void Start()
     {
@@ -71,6 +74,8 @@ public class Start_Menu_Script : MonoBehaviour
         ps.healthModeActive = false;
 
         dnc = (GameObject.FindGameObjectWithTag("SunMoonController")).GetComponent<dayNightCycle_Script>();
+
+        //healthSlider.gameObject.transform.Find("Fill Area").Find("Fill").GetComponent<Image>().color = sliderHealthDefault;
     }
 
     public void setDifficulty(int d)
@@ -306,6 +311,16 @@ public class Start_Menu_Script : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        /*if(ps.healthScore >= ps.MaxHealthScore*.75f)
+        {
+            healthSlider.gameObject.transform.Find("Fill Area").Find("Fill").GetComponent<Image>().color = sliderFullHealth;
+        }
+        else
+        {
+            healthSlider.gameObject.transform.Find("Fill Area").Find("Fill").GetComponent<Image>().color = sliderHealthDefault;
+        }*/
+
         if (Input.GetKeyDown("escape"))//enable pause menu while no other menu is enabled
         {
             if (menu == 0)
@@ -334,7 +349,7 @@ public class Start_Menu_Script : MonoBehaviour
             }
             else
             {
-                if (ps.healthScore < ps.MaxHealthScore / 4 && ps.detected)//low health and detected
+                if (ps.healthScore < ps.MaxHealthScore / 3 && ps.detected)//low health and detected
                 {
                     healthIcon.sprite = healthIconImages[4];
                 }

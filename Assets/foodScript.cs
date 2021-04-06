@@ -28,6 +28,8 @@ public class foodScript : MonoBehaviour
     //navmeshobstacle 
     public NavMeshObstacle nmo;
 
+    public LayerMask ignoreLayer;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -59,7 +61,7 @@ public class foodScript : MonoBehaviour
     {
         this.transform.Rotate(Vector3.up * speed * Time.deltaTime);
 
-        if (Physics.Raycast(transform.position, transform.TransformDirection(vv), out hit, Mathf.Infinity))
+        if (Physics.Raycast(transform.position, transform.TransformDirection(vv), out hit, Mathf.Infinity, ~ignoreLayer))
         {
             Debug.DrawRay(transform.position, transform.TransformDirection(vv) * hit.distance, Color.yellow);
             //Debug.Log("Did Hit: "+ hit.distance);
@@ -71,7 +73,7 @@ public class foodScript : MonoBehaviour
         }
         else
         {
-            if (!(Physics.Raycast(transform.position, transform.TransformDirection(aa), out hit, Mathf.Infinity)))
+            if (!(Physics.Raycast(transform.position, transform.TransformDirection(aa), out hit, Mathf.Infinity, ~ignoreLayer)))
             {
                 if (hit.distance < offGroundHeight)
                 {
