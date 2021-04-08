@@ -31,11 +31,16 @@ public class dayNightCycle_Script : MonoBehaviour
     public float sunRate;//rate at which sun angle increases
     public float secondsOfDayTime, secondsOfNightTime;//number of seconds for night mode
 
+    //--------------------------------------
+    /*public Color colorStart;
+    public Color colorEnd;
+    public float duration = 1.0F;*/
+    public Material nightSkyMat;
+    public Material daySkyMat;
     // Start is called before the first frame update
     void Start()
     {
-
-        
+        daySkyMat = RenderSettings.skybox;
         //*****************************************
         if (secondsOfNightTime > 165f)
         {
@@ -98,11 +103,13 @@ public class dayNightCycle_Script : MonoBehaviour
     {
         if(dayTime)
         {
+            RenderSettings.skybox = daySkyMat;
             moonLight.enabled = false;
             sunLight.enabled = true;
         }
         else
         {
+            RenderSettings.skybox = nightSkyMat;
             moonLight.enabled = true;
             sunLight.enabled = false;
         }

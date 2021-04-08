@@ -51,7 +51,7 @@ public class player_Script : MonoBehaviour
 
     public GameObject[] enemies;
 
-    public bool isLoud, isMoving;
+    public bool isLoud, isMoving, isQuiet;
 
     public movementController mc;
 

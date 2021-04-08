@@ -26,7 +26,7 @@ public class EnemyAI : MonoBehaviour
     public NavMeshAgent agent;
     public LayerMask ground, playerLayer;
 
-    public float speed, minSpeed = 2, maxSpeed = 5;
+    public float speed, minSpeed, maxSpeed;
     //public enemy_detection ed;
     //public GameObject enemyDetectionObject;
     protected Vector3 leftDetector, leftDetector2;
@@ -52,8 +52,11 @@ public class EnemyAI : MonoBehaviour
 
     public LayerMask ignorePlayer;
 
+    public NavMeshAgent enemyNavMeshAgent ;
+
     private void Start()
     {
+        enemyNavMeshAgent = this.GetComponent<NavMeshAgent>();
         player = GameObject.FindGameObjectWithTag("Player");
         ebc = GetComponentInChildren<enemyBodyCollider>();
         maxEnemyHealth = ebc.maxEnemyHealth;
@@ -83,10 +86,10 @@ public class EnemyAI : MonoBehaviour
 
         positions2Move2 = GameObject.FindGameObjectsWithTag("TargetDestination");
         dnc = GameObject.FindGameObjectWithTag("SunMoonController").GetComponent<dayNightCycle_Script>();
-       
+
         //NavMeshHit hit;
         //NavMesh.SamplePosition(transform.position, out hit, 1.0f, NavMesh.AllAreas);
-
+        enemyNavMeshAgent.speed = speed;
     }
 
     void drawLines()
@@ -259,7 +262,7 @@ public class EnemyAI : MonoBehaviour
     public Vector3 randomRotate()
     {
         Vector3 randomRotate = new Vector3(Random.insideUnitCircle.x*5 + this.transform.position.x, transform.position.y, Random.insideUnitCircle.y*5 + this.transform.position.z);
-        Instantiate(grave, randomRotate, Quaternion.identity);
+        //Instantiate(grave, randomRotate, Quaternion.identity);
         return randomRotate;
     }
 
@@ -280,6 +283,14 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
+        if(td.alertMode || td.playerAlertDetected)
+        {
+            enemyNavMeshAgent.speed = speed*1.5f;
+        }
+        else
+        {
+            enemyNavMeshAgent.speed = speed;
+        }
 
         enemyHealth = ebc.enemyHealth;
 
@@ -319,8 +330,8 @@ public class EnemyAI : MonoBehaviour
         //********************************************************************************
         //*************************object avoidance**************************************
         //********************************************************************************
-        
-        
+
+
         //--------------------------------if alertmode is true and looking at player, player is lit
 
 
@@ -335,52 +346,60 @@ public class EnemyAI : MonoBehaviour
         }
         else
         {
-            if ((targetPosition - transform.position).magnitude <= nearEnoughToTarget || here)//if enemy is at destination
+            if (td.playerSusDetected || td.susMode)//if player is suspicious, only look in direction of player, dont follow to player
             {
-                if (randomLoiterTime > 0f)//if not done loitering, just stay at position and count down
-                {
-                    randomLoiterTime -= Time.deltaTime * 1f;//countdown while waiting
-                    here = true;
-
-                    //objectAvoidance();
-                    if (agent.isStopped == false)
-                    {
-                        agent.isStopped = true;
-                    }
-                    if (noticingSomething)//if enemy notices something, face that object
-                    {
-                        facing();
-                    }
-                    else//else avoid facing non-tagged objects
-                    {
-                        objectAvoidance();
-                        back2Wall();
-                    }
-                }
-                else//if done loitering, moving to another spot
-                {
-                    agent.isStopped = false;
-                    //move to spot, if not detecting anything interesting
-                    if (positions2Move2.Length > 0)//if positions to move to exist
-                    {
-                        position2Move2Backup = Random.Range(0, positions2Move2.Length);
-                        if (td.alertMode)
-                        {
-                        targetPosition = randomRotate();
-                        }
-                        else
-                        {
-                            targetPosition = positions2Move2[position2Move2Backup].transform.position;//pick position
-                        }
-                        randomLoiterTime = Random.Range(minLoiterTime, maxLoiterTime);//set random loiter time
-                        here = false;//no longer here
-
-                    }
-                }
+                this.transform.LookAt(player.transform);
             }
             else
             {
-                agent.SetDestination(targetPosition);
+
+                if ((targetPosition - transform.position).magnitude <= nearEnoughToTarget || here)//if enemy is at destination
+                {
+                    if (randomLoiterTime > 0f)//if not done loitering, just stay at position and count down
+                    {
+                        randomLoiterTime -= Time.deltaTime * 1f;//countdown while waiting
+                        here = true;
+
+                        //objectAvoidance();
+                        if (agent.isStopped == false)
+                        {
+                            agent.isStopped = true;
+                        }
+                        if (noticingSomething)//if enemy notices something, face that object
+                        {
+                            facing();
+                        }
+                        else//else avoid facing non-tagged objects
+                        {
+                            objectAvoidance();
+                            back2Wall();
+                        }
+                    }
+                    else//if done loitering, moving to another spot
+                    {
+                        agent.isStopped = false;
+                        //move to spot, if not detecting anything interesting
+                        if (positions2Move2.Length > 0)//if positions to move to exist
+                        {
+                            position2Move2Backup = Random.Range(0, positions2Move2.Length);
+                            if (td.alertMode && !td.playerAlertDetected)
+                            {
+                                targetPosition = randomRotate();
+                            }
+                            else
+                            {
+                                targetPosition = positions2Move2[position2Move2Backup].transform.position;//pick position
+                            }
+                            randomLoiterTime = Random.Range(minLoiterTime, maxLoiterTime);//set random loiter time
+                            here = false;//no longer here
+
+                        }
+                    }
+                }
+                else
+                {
+                    agent.SetDestination(targetPosition);
+                }
             }
         }
 

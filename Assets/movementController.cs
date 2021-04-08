@@ -6,7 +6,7 @@ public class movementController : MonoBehaviour
 {
     public dayNightCycle_Script dnc;
     public CharacterController controller;
-    public float speed, runSpeed;
+    public float speed, runSpeed, slowSpeed;
     private float defaultSpeed;
 
     public Vector3 velocity;
@@ -156,25 +156,43 @@ public class movementController : MonoBehaviour
         }
         //***********************************************
 
-        if (Input.GetKey(KeyCode.LeftShift) && controller.isGrounded && ps.healthScore > 0f && cce.atCinemaPosition == false)
+        if ((Input.GetKey(KeyCode.LeftShift) || (Input.GetKey(KeyCode.C))) && controller.isGrounded && ps.healthScore > 0f && cce.atCinemaPosition == false)
         {
-            if(playerMoving)
+            if ((Input.GetKey(KeyCode.LeftShift)))
             {
-                if (sc != null)
+                if (playerMoving)
                 {
-                    sc.loud = true;
-                    isLoud = true;
+                    if (sc != null)
+                    {
+                        sc.loud = true;
+                        isLoud = true;
+                    }
                 }
+                else
+                {
+                    if (sc != null)
+                    {
+                        sc.loud = false;
+                        isLoud = false;
+                    }
+                }
+                speed = runSpeed;
             }
             else
             {
-                if (sc != null)
+                if ((Input.GetKey(KeyCode.C)))
                 {
-                    sc.loud = false;
-                    isLoud = false;
+                    if (playerMoving)
+                    {
+                        ps.isQuiet = true;
+                    }
+                    else
+                    {
+                        ps.isQuiet = false;
+                    }
+                    speed = slowSpeed;
                 }
             }
-            speed = runSpeed;
         }
         else
         {
@@ -182,6 +200,8 @@ public class movementController : MonoBehaviour
             {
                 sc.loud = false;
                 isLoud = false;
+                //sc.quiet = false;
+                ps.isQuiet = false;
             }
             speed = defaultSpeed;
         }

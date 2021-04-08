@@ -30,7 +30,7 @@ public class triggerDetection : MonoBehaviour
 
     public Vector3 soundDetection;
     private float soundLimit;
-    public float maxSoundLimit, defaultSoundLimit;
+    public float maxSoundLimit, defaultSoundLimit, touchLimit;
 
     // Start is called before the first frame update
     void Start()
@@ -48,6 +48,8 @@ public class triggerDetection : MonoBehaviour
         original = enemyRen.material.color;
         etc = GetComponentInChildren<enemyTextController>();
 
+        player = GameObject.FindGameObjectWithTag("Player");
+
         ps = player.GetComponent<player_Script>();
     }
 
@@ -60,7 +62,6 @@ public class triggerDetection : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         //********************CHECK DISTANCE FROM PLAYER TO ENEMY, IF CLOSE ENOUGH, THEN ENEMY CAN HEAR/DETECT PLAYER************************************
         if(player.GetComponent<player_Script>().isLoud)
         {
@@ -70,12 +71,36 @@ public class triggerDetection : MonoBehaviour
         {
             soundLimit = defaultSoundLimit;
         }
-        soundDetection = (player.transform.position - this.transform.position).normalized * soundLimit;
-        if (soundDetection.magnitude <= soundLimit && ps.isMoving)//if player is within sound detection limit and player is moving
+        soundDetection = (player.transform.position - this.transform.position).normalized;
+
+        /*
+        if (soundDetection.magnitude <= touchLimit)//if player is within touch limit
         {
-            Debug.DrawRay(this.transform.position, soundDetection, Color.red);
-            playerAlertDetected = true;
+            alertMode = true;
+            alertTimer = maxAlertTimer;
+            susTimer = maxSusTimer;
+            Debug.DrawRay(this.transform.position, soundDetection * touchLimit, Color.red);
         }
+        else
+        {
+            if (soundDetection.magnitude <= soundLimit && ps.isMoving && ps.isGrounded && !ps.isQuiet)//if player is within sound detection limit and player is moving and is grounded
+            {
+                if (soundDetection.magnitude <= touchLimit)//if player is within touch limit
+                { //playerAlertDetected = true;
+                    alertMode = true;
+                    alertTimer = maxAlertTimer;
+                    susTimer = maxSusTimer;
+                    Debug.DrawRay(this.transform.position, soundDetection * touchLimit, Color.red);
+                }
+                else
+                {
+                    //playerSusDetected = true;
+                    susMode = true;
+                    susTimer = maxSusTimer;
+                    Debug.DrawRay(this.transform.position, soundDetection * soundLimit, Color.red);
+                }
+            }
+        }*/
         
         //********************************************************
 
