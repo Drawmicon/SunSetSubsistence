@@ -54,6 +54,8 @@ public class player_Script : MonoBehaviour
     public bool isLoud, isMoving, isQuiet;
 
     public movementController mc;
+    public bool isAttacking;
+    public Vector3 playerForward;
 
     // Start is called before the first frame update
     void Start()
@@ -116,7 +118,14 @@ public class player_Script : MonoBehaviour
 
     public bool checkLightSources()//check all light sources, if at least one returns that the player is lit, the player is lit, else all false == player unlit
     {
-        for(int i = 0; i < lsArray.Length; i++)
+        foreach (GameObject enemy in enemies)
+        {
+            if (enemy.GetComponent<triggerDetection>().playerAlertDetected)
+            {
+                return true;
+            }
+        }
+        for (int i = 0; i < lsArray.Length; i++)
         {
             lightVisibility lv = lsArray[i].GetComponent<lightVisibility>();
             if (lv.playerInLight)
@@ -148,26 +157,21 @@ public class player_Script : MonoBehaviour
                 return true;
             }
         }
-        /*for (int i = 0; i < lsArray.Length; i++)
-        {
-            triggerDetection lv = enemies[i].GetComponent<triggerDetection>();
-            if (lv.playerAlertDetected)
-            {
-                return true;
-            }
-        }*/
         return false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        isLoud = mc.isLoud;
-        isMoving = mc.playerMoving ;
+        playerForward = this.transform.forward;
+        isLoud = mc.isLoud; 
+        isMoving = mc.playerMoving;
+        isAttacking = mc.isAttacking;
 
         alertDetected= checkEnemyAlert();
         if (alertDetected)//if already alert detected, set sus detected to false
         {
+
             detected = false;
         }
         else
@@ -175,7 +179,7 @@ public class player_Script : MonoBehaviour
             detected = checkEnemySuspicion();
         }
 
-        //if night time, then check light sources to see if player is lit
+        //if night time, then check light sources or if enemy is alert and looking at player, to see if player is lit
         if(!dnc.dayTime)
         {
             playerLit = checkLightSources();
@@ -261,18 +265,5 @@ public class player_Script : MonoBehaviour
         {
             stepTimer = maxStepTimer;
         }
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        //start fire delay damage timer
-        //once <= 0, take damage based on size of object: Collider.bounds.size;
-
-        //on collision water: teleport to last onground position
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        //reset fire damage delay timer
     }
 }

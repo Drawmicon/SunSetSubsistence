@@ -30,19 +30,17 @@ public class triggerDetection : MonoBehaviour
 
     public Vector3 soundDetection;
     private float soundLimit;
-    public float maxSoundLimit, defaultSoundLimit, touchLimit;
+    public float maxSoundLimit, defaultSoundLimit, touchLimit, attackDistanceLimit, attackAngleLimit;
+    public bool isInAttackRange, attackAngle, attackDistance;
 
     // Start is called before the first frame update
     void Start()
     {
+        isInAttackRange = false;//if true, then enemy is in attacking range
         soundLimit = defaultSoundLimit;
         ebc = GetComponentInParent<enemyBodyCollider>();
         alertTimer = 0;
         susTimer = 0;
-        if (outer != null && outer.width > 0)
-        {
-            detectionRadius = outer.width;
-        }
         //enemyRen = enemyBody.GetComponent<Renderer>();
         enemyRen = GetComponentInParent<Renderer>();
         original = enemyRen.material.color;
@@ -51,12 +49,6 @@ public class triggerDetection : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
 
         ps = player.GetComponent<player_Script>();
-    }
-
-    //Check around area if player is not detected, but still in sus/alert mode
-    public void randomLookAround()
-    {
-
     }
 
     // Update is called once per frame
@@ -71,9 +63,36 @@ public class triggerDetection : MonoBehaviour
         {
             soundLimit = defaultSoundLimit;
         }
-        soundDetection = (player.transform.position - this.transform.position).normalized;
+        soundDetection = (player.transform.position - this.transform.position);
+        Debug.DrawRay(this.transform.position, soundDetection, Color.black);//ray from enemy to players
+        Debug.DrawRay(player.transform.position, ps.playerForward, Color.white);//ray from enemy to players
+        if (Vector3.Angle(ps.playerForward, soundDetection) <= attackAngleLimit)
+        {
+            attackAngle = true;
+        }
+        else
+        {
+            attackAngle = false;
+        }
+        if (soundDetection.magnitude <= attackDistanceLimit)
+        {
+            //Debug.Log("distance from player to enemy: " + soundDetection.magnitude);
+            attackDistance = true;
+        }
+        else
+        {
+            attackDistance = false;
+        }
+        if (attackAngle && attackDistance)//if angle of enemy to player and forward player vector is close, and magnitude is close, then in attacking range
+        {
+            isInAttackRange = true;
+        }
+        else
+        {          
+            isInAttackRange = false;
+        }
 
-        /*
+        
         if (soundDetection.magnitude <= touchLimit)//if player is within touch limit
         {
             alertMode = true;
@@ -100,24 +119,16 @@ public class triggerDetection : MonoBehaviour
                     Debug.DrawRay(this.transform.position, soundDetection * soundLimit, Color.red);
                 }
             }
-        }*/
+        }
         
         //********************************************************
 
-
+        //enemy health
         float enemyHealth=ebc.enemyHealth;
         float maxEnemyHealth=ebc.maxEnemyHealth;
-        /*float enemyHealth, maxEnemyHealth;
-        if(eai != null)
-        {
-            enemyHealth= eai.enemyHealth;
-            maxEnemyHealth=eai.maxEnemyHealth;
-        }
-        else
-        {
-            enemyHealth = 100;
-            maxEnemyHealth = 100;
-        }*/
+        //check if player is in collider
+        inInnerCollider = inner.inCollider;
+        inOuterCollider = outer.inCollider;
 
         //change number of exclaimation marks based on amount of time left on alert mode timer
         if (playerAlertDetected)
@@ -179,7 +190,7 @@ public class triggerDetection : MonoBehaviour
             enemyRen.material.SetColor("_Color", Color.red);
             if (eai != null){player = eai.lookAtTarget;
             eai.noticingSomething = true; }
-        }
+        }//if detected, change color of enemy, if applicable
         else
         {
             if (playerSusDetected)
@@ -202,9 +213,29 @@ public class triggerDetection : MonoBehaviour
             }
         }
         
-        //check if player is in collider
-        inInnerCollider = inner.inCollider;
-        inOuterCollider = outer.inCollider;
+        //countdown timers
+        if(alertTimer > 0f)
+        {
+            alertMode = true;
+            alertTimer -= Time.deltaTime;
+        }
+        else
+        {
+            alertMode = false;
+            if(susTimer > 0f)
+            {
+                if (Vector3.Angle(this.forwardParentVector, soundDetection) <= detectionRadius)
+                {
+                    this.transform.LookAt(ps.lastDetectedDirection);
+                }
+                susMode = true;
+                susTimer -= Time.deltaTime;
+            }
+            else
+            {
+                susMode = false;
+            }
+        }
 
         enemy2Player = (player.transform.position - this.transform.position).normalized * inner.distance;
         forwardParentVector = this.transform.parent.transform.forward.normalized * 3;
@@ -227,8 +258,6 @@ public class triggerDetection : MonoBehaviour
                     if (inInnerCollider)//if player detected in inner collider and outer collider
                     {
                         playerAlertDetected = true;//player alert is on, enemy looks at player, start timers
-                        alertMode = true;
-
                         this.transform.LookAt(player.transform);
                         alertTimer = maxAlertTimer;
                         susTimer = maxSusTimer;
@@ -236,7 +265,6 @@ public class triggerDetection : MonoBehaviour
                     else//if player is only detected in outer collider
                     {
                         playerSusDetected = true;
-                        susMode = true;
                         susTimer = maxSusTimer;
                     }
                 }
@@ -245,31 +273,7 @@ public class triggerDetection : MonoBehaviour
             {
                 playerAlertDetected = false;
                 playerSusDetected = false;
-
-                //if alert or suspicious mode timers are done, return to normal
-                if (alertTimer <= 0)// if alert timer is done, turn off alert bool
-                {
-                    alertMode = false;
-
-                    randomLookAround();
-                    
-                    if (susTimer <= 0)// if sus timer is done, turn off sus bool and look forward
-                    {
-                        susMode = false;
-                        
-                        this.transform.rotation = this.transform.parent.rotation;
-                    }
-                    else//if sus timer not done, countdown
-                    {
-                        susMode = true;
-                        susTimer -= Time.deltaTime;
-                    }
-                }
-                else//if alert timer not done, countdown
-                {
-                    alertMode = true;
-                    alertTimer -= Time.deltaTime;
-                }           
+                this.transform.rotation = this.transform.parent.rotation; 
             }
         }
         else

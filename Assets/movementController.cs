@@ -33,7 +33,7 @@ public class movementController : MonoBehaviour
 
     public cinemaCameraExtra cce;
 
-    public bool isLoud;
+    public bool isLoud, isAttacking;
     // Start is called before the first frame update
     void Start()
     {
@@ -83,6 +83,7 @@ public class movementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        isAttacking = ac.swing;//check if player is attacking
         isMoving();// check if player is moving on ground
 
         if (glideMode)
@@ -218,14 +219,10 @@ public class movementController : MonoBehaviour
             }
         }
 
-        //********Attack button**********************
-        if (Input.GetKeyDown(KeyCode.C) && !dnc.dayTime && cce.atCinemaPosition == false)//check if cinema camera is deactive
+        //********Attack button********************** E == attack
+        if (Input.GetKeyDown(KeyCode.E) && !dnc.dayTime && cce.atCinemaPosition == false)//check if cinema camera is deactive
         {
             ac.swing = true;
-            if (sc != null && ac.swing == true)//also check if attack made contact
-            {
-                sc.collin.radius = sc.maxColliderSize;
-            }
         }
     }
     //https://www.youtube.com/watch?v=_QajrabyTJc&ab_channel=Brackeys
