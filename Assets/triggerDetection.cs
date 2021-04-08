@@ -28,9 +28,14 @@ public class triggerDetection : MonoBehaviour
 
     public player_Script ps;
 
+    public Vector3 soundDetection;
+    private float soundLimit;
+    public float maxSoundLimit, defaultSoundLimit;
+
     // Start is called before the first frame update
     void Start()
     {
+        soundLimit = defaultSoundLimit;
         ebc = GetComponentInParent<enemyBodyCollider>();
         alertTimer = 0;
         susTimer = 0;
@@ -55,6 +60,26 @@ public class triggerDetection : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        //********************CHECK DISTANCE FROM PLAYER TO ENEMY, IF CLOSE ENOUGH, THEN ENEMY CAN HEAR/DETECT PLAYER************************************
+        if(player.GetComponent<player_Script>().isLoud)
+        {
+            soundLimit = maxSoundLimit;
+        }
+        else
+        {
+            soundLimit = defaultSoundLimit;
+        }
+        soundDetection = (player.transform.position - this.transform.position).normalized * soundLimit;
+        if (soundDetection.magnitude <= soundLimit && ps.isMoving)//if player is within sound detection limit and player is moving
+        {
+            Debug.DrawRay(this.transform.position, soundDetection, Color.red);
+            playerAlertDetected = true;
+        }
+        
+        //********************************************************
+
+
         float enemyHealth=ebc.enemyHealth;
         float maxEnemyHealth=ebc.maxEnemyHealth;
         /*float enemyHealth, maxEnemyHealth;
@@ -69,15 +94,40 @@ public class triggerDetection : MonoBehaviour
             maxEnemyHealth = 100;
         }*/
 
+        //change number of exclaimation marks based on amount of time left on alert mode timer
         if (playerAlertDetected)
         {
-            etc.textOutput = "!!!\n" + etc.names[etc.nameChoice] + "(" + enemyHealth + "/" + maxEnemyHealth + ")";
+            etc.textOutput = "!!!!!\n" + etc.names[etc.nameChoice] + "(" + enemyHealth + "/" + maxEnemyHealth + ")";
         }
         else
         {
             if (alertMode)
             {
-                etc.textOutput = "!\n" + etc.names[etc.nameChoice] + "(" + enemyHealth + "/" + maxEnemyHealth + ")";
+                if(alertTimer >= maxAlertTimer*.8f)
+                { 
+                    etc.textOutput = "!!!!\n" + etc.names[etc.nameChoice] + "(" + enemyHealth + "/" + maxEnemyHealth + ")";
+                }
+                else
+                {
+                    if (alertTimer >= maxAlertTimer * .6f)//if alert timer is greater than 60% of max timer
+                    {
+                        etc.textOutput = "!!!\n" + etc.names[etc.nameChoice] + "(" + enemyHealth + "/" + maxEnemyHealth + ")";
+                    }
+                    else
+                    {
+                        if (alertTimer >= maxAlertTimer * .4f)//if alert timer is greater than 40% of max timer
+                        {
+                            etc.textOutput = "!!\n" + etc.names[etc.nameChoice] + "(" + enemyHealth + "/" + maxEnemyHealth + ")";
+                        }
+                        else
+                        {
+                            if (alertTimer >= maxAlertTimer * .6f)//if alert timer is greater than 20% of max timer
+                            {
+                                etc.textOutput = "!\n" + etc.names[etc.nameChoice] + "(" + enemyHealth + "/" + maxEnemyHealth + ")";
+                            }
+                        }
+                    }
+                }
             }
             else
             {
@@ -142,12 +192,12 @@ public class triggerDetection : MonoBehaviour
 
         Ray lightHit = new Ray(this.transform.position, enemy2Player);
         RaycastHit hit;
+
         if (Physics.Raycast(lightHit, out hit, inner.distance, playerLayers))
         {
             if ((hit.collider.tag == "Player") && inOuterCollider && Vector3.Angle(enemy2Player, forwardParentVector) <= detectionRadius)//if player detected in outer collider
             {
-
-                if (ps.playerLit)//check if player is lit up
+                if (ps.playerLit || alertMode)//check if player is lit up or alert mode is on, aka enemy is using light source
                 {
                     if (inInnerCollider)//if player detected in inner collider and outer collider
                     {
@@ -163,15 +213,6 @@ public class triggerDetection : MonoBehaviour
                         playerSusDetected = true;
                         susMode = true;
                         susTimer = maxSusTimer;
-                        /* susTimer = maxSusTimer;
-                         if (susLookAtTimer <= 0)
-                         {                      
-                             susLookAtTimer = maxSusLookAtTimer;
-                         }
-                         else
-                         {
-                             susLookAtTimer -= Time.deltaTime;
-                         }*/
                     }
                 }
             }

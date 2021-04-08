@@ -32,6 +32,8 @@ public class movementController : MonoBehaviour
     public armController ac;
 
     public cinemaCameraExtra cce;
+
+    public bool isLoud;
     // Start is called before the first frame update
     void Start()
     {
@@ -161,6 +163,7 @@ public class movementController : MonoBehaviour
                 if (sc != null)
                 {
                     sc.loud = true;
+                    isLoud = true;
                 }
             }
             else
@@ -168,6 +171,7 @@ public class movementController : MonoBehaviour
                 if (sc != null)
                 {
                     sc.loud = false;
+                    isLoud = false;
                 }
             }
             speed = runSpeed;
@@ -177,6 +181,7 @@ public class movementController : MonoBehaviour
             if (sc != null)
             {
                 sc.loud = false;
+                isLoud = false;
             }
             speed = defaultSpeed;
         }

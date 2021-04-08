@@ -51,9 +51,14 @@ public class player_Script : MonoBehaviour
 
     public GameObject[] enemies;
 
+    public bool isLoud, isMoving;
+
+    public movementController mc;
+
     // Start is called before the first frame update
     void Start()
     {
+        mc = GetComponentInChildren<movementController>();
         enemies = GameObject.FindGameObjectsWithTag("EnemyHead");
 
             /**/
@@ -157,6 +162,9 @@ public class player_Script : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        isLoud = mc.isLoud;
+        isMoving = mc.playerMoving ;
+
         alertDetected= checkEnemyAlert();
         if (alertDetected)//if already alert detected, set sus detected to false
         {
