@@ -82,7 +82,10 @@ public class player_Script : MonoBehaviour
         {
             player = GameObject.FindGameObjectWithTag("Player_Controller");
         }
-       pCon = player.GetComponent<CharacterController>();
+        if (pCon == null)
+        {
+            pCon = player.GetComponent<CharacterController>();
+        }
         healthScore = MaxHealthScore;
         healthBar.value = playerHealthSlider();
         step1 = this.transform.position;
