@@ -357,7 +357,7 @@ public class EnemyAI : MonoBehaviour
                     }
                     else//else avoid facing non-tagged objects
                     {
-                        if (td.susMode || td.playerSusDetected)
+                        if (!td.susMode || !td.playerSusDetected)
                         {
                             objectAvoidance();
                             back2Wall();
@@ -419,6 +419,25 @@ public class EnemyAI : MonoBehaviour
         }
         else
         {
+            if((this.transform.position - player.transform.position).magnitude <= attackDistance)
+            {
+                if (td.playerAlertDetected && attackTimer <= 0f)//ENEMY attacking PLAYER: PLAYER LOSES HEALTH
+                {
+                    isAttacking = true;
+                    ps.healthScore -= attackDamage * Time.deltaTime;
+                    attackTimer = maxAttackTimer;
+                }
+                else
+                {
+                    isAttacking = false;
+                    attackTimer -= Time.deltaTime;
+                }
+
+                if (ps.isAttacking)//PLAYER attacking ENEMY: ENEMY LOSES HEALTH
+                {
+                    enemyHealth -= attackDamage * Time.deltaTime;
+                }
+            }
             isAttacking = false;
             Debug.Log("Attack Check Sphere not working");
         }

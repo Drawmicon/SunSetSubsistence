@@ -58,7 +58,7 @@ public class lightVisibility : MonoBehaviour
         }
         else
         {
-            Debug.Log("Error: No light attached to the light visibility script");
+            Debug.LogError("Error: No light attached to the light visibility script");
         }
         dn = (GameObject.FindGameObjectWithTag("SunMoonController")).GetComponent<dayNightCycle_Script>();
 
@@ -129,7 +129,7 @@ public class lightVisibility : MonoBehaviour
         {
             if (hit.collider.tag == "Player" /*|| hit.collider.tag == "playerSound" */|| hit.collider.tag == "Gargoyle" )
             {
-                Debug.Log("Raycast hit object: " + hit.collider.name + "(tag:" + hit.collider.tag + ")");
+                //Debug.Log("Raycast hit object: " + hit.collider.name + "(tag:" + hit.collider.tag + ")");
                 //player.GetComponentInParent<player_Script>().playerLit = true;
                 //ps.playerLit = true;
                 playerInLight = true;
@@ -138,7 +138,7 @@ public class lightVisibility : MonoBehaviour
             }
             else
             {
-                Debug.Log("Raycast hit object: " + hit.collider.name + "(tag:" + hit.collider.tag + ")");
+                //Debug.Log("Raycast hit object: " + hit.collider.name + "(tag:" + hit.collider.tag + ")");
                 if (dn.dayTime == false)//if player is lit, but daytime, player is not lit by lamp
                 {
                     //player.GetComponentInParent<player_Script>().playerLit = false;
