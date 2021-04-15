@@ -29,13 +29,16 @@ public class triggerDetection : MonoBehaviour
     public player_Script ps;
 
     public Vector3 soundDetection;
-    private float soundLimit;
+    public float soundLimit;
     public float maxSoundLimit, defaultSoundLimit, touchLimit, attackDistanceLimit, attackAngleLimit;
     public bool isInAttackRange, attackAngle, attackDistance;
-
+    public bool touchDetected, soundDetected;
     // Start is called before the first frame update
     void Start()
     {
+        eai = GetComponentInParent<EnemyAI>();
+        touchDetected = false;
+        soundDetected = false;
         isInAttackRange = false;//if true, then enemy is in attacking range
         soundLimit = defaultSoundLimit;
         ebc = GetComponentInParent<enemyBodyCollider>();
@@ -61,7 +64,7 @@ public class triggerDetection : MonoBehaviour
         }
         else
         {
-            soundLimit = defaultSoundLimit;
+            soundLimit = defaultSoundLimit;//also touch limit
         }
         soundDetection = (player.transform.position - this.transform.position);
         Debug.DrawRay(this.transform.position, soundDetection, Color.black);//ray from enemy to players
@@ -95,6 +98,7 @@ public class triggerDetection : MonoBehaviour
         
         if (soundDetection.magnitude <= touchLimit)//if player is within touch limit
         {
+            touchDetected = true;
             alertMode = true;
             alertTimer = maxAlertTimer;
             susTimer = maxSusTimer;
@@ -102,25 +106,34 @@ public class triggerDetection : MonoBehaviour
         }
         else
         {
-            if (soundDetection.magnitude <= soundLimit && ps.isMoving && ps.isGrounded && !ps.isQuiet)//if player is within sound detection limit and player is moving and is grounded
+            touchDetected = false;
+        }
+
+        if (soundDetection.magnitude <= soundLimit && ps.isMoving && ps.isGrounded && !ps.isQuiet)//if player is within sound detection limit and player is moving and is grounded
+        {
+            soundDetected = true;
+            if (soundDetection.magnitude <= touchLimit)//if player is within touch limit
+            { //playerAlertDetected = true;
+                touchDetected = true;
+                alertMode = true;
+                alertTimer = maxAlertTimer;
+                susTimer = maxSusTimer;
+                Debug.DrawRay(this.transform.position, soundDetection * touchLimit, Color.red);
+            }
+            else
             {
-                if (soundDetection.magnitude <= touchLimit)//if player is within touch limit
-                { //playerAlertDetected = true;
-                    alertMode = true;
-                    alertTimer = maxAlertTimer;
-                    susTimer = maxSusTimer;
-                    Debug.DrawRay(this.transform.position, soundDetection * touchLimit, Color.red);
-                }
-                else
-                {
-                    //playerSusDetected = true;
-                    susMode = true;
-                    susTimer = maxSusTimer;
-                    Debug.DrawRay(this.transform.position, soundDetection * soundLimit, Color.red);
-                }
+                //playerSusDetected = true;
+                touchDetected = false;
+                susMode = true;
+                susTimer = maxSusTimer;
+                Debug.DrawRay(this.transform.position, soundDetection * soundLimit, Color.red);
             }
         }
-        
+        else
+        {
+            soundDetected = false;
+        }
+
         //********************************************************
 
         //enemy health
@@ -133,7 +146,14 @@ public class triggerDetection : MonoBehaviour
         //change number of exclaimation marks based on amount of time left on alert mode timer
         if (playerAlertDetected)
         {
-            etc.textOutput = "!!!!!\n" + etc.names[etc.nameChoice] + "(" + enemyHealth + "/" + maxEnemyHealth + ")";
+            if (eai.isAttacking)
+            {
+                etc.textOutput = "Attack!\n" + etc.names[etc.nameChoice] + "(" + enemyHealth + "/" + maxEnemyHealth + ")";
+            }
+            else
+            {
+                etc.textOutput = "!!!!!\n" + etc.names[etc.nameChoice] + "(" + enemyHealth + "/" + maxEnemyHealth + ")";
+            }
         }
         else
         {
@@ -278,7 +298,7 @@ public class triggerDetection : MonoBehaviour
         }
         else
         {
-            Debug.Log("Enemy Raycast for enemy object " + this.name + " not working!");
+           // Debug.Log("Enemy Raycast for enemy object " + this.name + " not working!");
         }
         
     }

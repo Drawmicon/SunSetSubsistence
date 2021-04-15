@@ -269,4 +269,5 @@ public class player_Script : MonoBehaviour
             stepTimer = maxStepTimer;
         }
     }
+    
 }

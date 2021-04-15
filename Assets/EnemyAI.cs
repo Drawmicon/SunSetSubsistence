@@ -53,10 +53,16 @@ public class EnemyAI : MonoBehaviour
     public LayerMask ignorePlayer;
 
     public NavMeshAgent enemyNavMeshAgent ;
+
+    public Transform attackCheck;
     public float attackDamage = 15;
+    public float attackTimer, maxAttackTimer;
+    public float attackDistance;
+    public bool isAttacking;
 
     private void Start()
     {
+        isAttacking = false;
         runSpeed = runSpeed * 1.75f;
         enemyNavMeshAgent = this.GetComponent<NavMeshAgent>();
         player = GameObject.FindGameObjectWithTag("Player");
@@ -92,6 +98,7 @@ public class EnemyAI : MonoBehaviour
         //NavMeshHit hit;
         //NavMesh.SamplePosition(transform.position, out hit, 1.0f, NavMesh.AllAreas);
         enemyNavMeshAgent.speed = speed;
+        lookAtTarget = player;
     }
 
     void drawLines()
@@ -275,7 +282,7 @@ public class EnemyAI : MonoBehaviour
     private void Update()
     {
         //***********CHECK ATTACK******************
-        if (td.isInAttackRange && ps.isAttacking)//if player is facing enemy, and attacking, enemy take damage
+        if ((td.isInAttackRange || td.touchDetected) && ps.isAttacking)//if player is facing enemy, and attacking, enemy take damage
         {
             ebc.enemyHealth -= attackDamage*Time.deltaTime;
             td.alertMode = true;
@@ -321,8 +328,9 @@ public class EnemyAI : MonoBehaviour
         //********************************************************************************
 
         //NORMAL BEHAVIOR>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        if (td.playerAlertDetected)//if player is seen
+        if (td.playerAlertDetected || td.soundDetected || td.touchDetected)//if player is seen
         {
+            randomLoiterTime = 0f;
             if (agent.destination != player.transform.position)//if destination not at player position
             {
                 agent.SetDestination(player.transform.position);//move to enemy
@@ -349,8 +357,11 @@ public class EnemyAI : MonoBehaviour
                     }
                     else//else avoid facing non-tagged objects
                     {
-                        objectAvoidance();
-                        back2Wall();
+                        if (td.susMode || td.playerSusDetected)
+                        {
+                            objectAvoidance();
+                            back2Wall();
+                        }
                     }
                 }
                 else//if done loitering, moving to another spot
@@ -376,9 +387,40 @@ public class EnemyAI : MonoBehaviour
             }
             else
             {
+                if (agent.isStopped == true)
+                {
+                    agent.isStopped = false;
+                }
                 agent.SetDestination(targetPosition);
             }
             
+        }
+
+        
+        if (Physics.CheckSphere(attackCheck.position, attackDistance, playerLayer))
+        {
+            Debug.Log("Attack Check Sphere not working");
+            if (td.playerAlertDetected && attackTimer <= 0f)//ENEMY attacking PLAYER: PLAYER LOSES HEALTH
+            {
+                isAttacking = true;
+                ps.healthScore -= attackDamage*Time.deltaTime;
+                attackTimer = maxAttackTimer;
+            }
+            else
+            {
+                isAttacking = false;
+                attackTimer -= Time.deltaTime;
+            }
+
+            if (ps.isAttacking)//PLAYER attacking ENEMY: ENEMY LOSES HEALTH
+            {
+                enemyHealth -= attackDamage*Time.deltaTime;
+            }
+        }
+        else
+        {
+            isAttacking = false;
+            Debug.Log("Attack Check Sphere not working");
         }
 
         //if timer not done, run timer, continue loitering
