@@ -57,9 +57,12 @@ public class player_Script : MonoBehaviour
     public bool isAttacking;
     public Vector3 playerForward;
 
+    public bool isFound;
+
     // Start is called before the first frame update
     void Start()
     {
+        isFound = false;
         mc = GetComponentInChildren<movementController>();
         enemies = GameObject.FindGameObjectsWithTag("EnemyHead");
 
@@ -166,6 +169,8 @@ public class player_Script : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        isFound = checkEnemyAlert();
+
         playerForward = this.transform.forward;
         isLoud = mc.isLoud; 
         isMoving = mc.playerMoving;

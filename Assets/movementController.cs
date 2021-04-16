@@ -6,7 +6,7 @@ public class movementController : MonoBehaviour
 {
     public dayNightCycle_Script dnc;
     public CharacterController controller;
-    public float speed, runSpeed, slowSpeed;
+    public float speed, runSpeed, slowSpeed, slowRunSpeed;
     private float defaultSpeed;
 
     public Vector3 velocity;
@@ -177,7 +177,13 @@ public class movementController : MonoBehaviour
                         isLoud = false;
                     }
                 }
-                speed = runSpeed;
+                if (ps.isFound)
+                {
+                    speed = slowRunSpeed;
+                }
+                else { 
+                    speed = runSpeed;
+                }
             }
             else
             {
@@ -204,7 +210,14 @@ public class movementController : MonoBehaviour
                 //sc.quiet = false;
                 ps.isQuiet = false;
             }
-            speed = defaultSpeed;
+            if (ps.isFound)
+            {
+                speed = slowSpeed;
+            }
+            else
+            {
+                speed = defaultSpeed;
+            }
         }
 
         //fall damage: velocity of gravity aceleration > x value
